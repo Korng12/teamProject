@@ -1,12 +1,16 @@
 package ui;
-import services.Admin;
+import models.Admin;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import controllers.UserController;
 
 public class LoginUI extends JFrame {
     private CardLayout cardLayout;
     private JPanel cardPanel;
+    private UserController userController =new UserController();
 
     LoginUI() {
         this.setSize(1000, 700);
@@ -87,7 +91,7 @@ public class LoginUI extends JFrame {
                         "Error",
                         JOptionPane.ERROR_MESSAGE
                 );
-            } else if (!isValidEmail(inputEmail)) {
+            } else if (!utils.ValidationUtils.isValidEmail(inputEmail)) {
                 JOptionPane.showMessageDialog(
                         LoginUI.this,
                         "Please enter a valid email address!(email should be followed by @gmail.com)",
@@ -97,17 +101,15 @@ public class LoginUI extends JFrame {
             } else if (inputPassword.length == 0 || new String(inputPassword).equals("Enter your password")) {
                 JOptionPane.showMessageDialog(
                         LoginUI.this,
-                        "Please enter a password!",
+                        "Please enter your password!",
                         "Error",
                         JOptionPane.ERROR_MESSAGE
                 );
             } else{
-                Admin admin= new Admin();
-                String passwordString=new String(inputPassword);
-                if(admin.verifyAdmin(inputEmail,passwordString)){
+                if(userController.login(inputEmail,new String(inputPassword))){
                     JOptionPane.showMessageDialog(
                             LoginUI.this,
-                            "Welcome, Admin!",
+                            "Hello welcome",
                             "Success",
                             JOptionPane.INFORMATION_MESSAGE
                     );
@@ -177,11 +179,29 @@ public class LoginUI extends JFrame {
         nameField.setMaximumSize(new Dimension(300,30));
         emailField.setMaximumSize(new Dimension(300, 30));
         passwordField.setMaximumSize(new Dimension(300, 30));
+        JButton uploadButton=new JButton("Choose profile");
+        JLabel filePathLabel=new JLabel();
+        uploadButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        filePathLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        uploadButton.addActionListener(e->{
+            JFileChooser fileChooser =new JFileChooser();
+            fileChooser.setDialogTitle("Choose your profile picture");
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "png", "jpeg"));
+            int result=fileChooser.showOpenDialog(registerPanel);
+            if(result==JFileChooser.APPROVE_OPTION){
+                File selectedFile = fileChooser.getSelectedFile();
+                filePathLabel.setText("Selected: "+selectedFile.getName());
+            }else{
+                filePathLabel.setText("No file selected");
+            }
+        });
 
         JLabel backToLogin=new JLabel("Back to login");
         backToLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
         backToLogin.setCursor(new Cursor(Cursor.HAND_CURSOR));
         backToLogin.setForeground(Color.BLUE);
+
         backToLogin.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -196,7 +216,7 @@ public class LoginUI extends JFrame {
             String inputEmail = emailField.getText().trim();
             char[] inputPassword = passwordField.getPassword();
             if(inputName.isEmpty() || inputName.equals("Enter your name") ){
-                JOptionPane.showMessageDialog(this,"Please enter your real name","error",JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this,"Please enter your name","error",JOptionPane.ERROR_MESSAGE);
             }
 
             else if (inputEmail.isEmpty() || inputEmail.equals("Enter your email") ) {
@@ -206,41 +226,22 @@ public class LoginUI extends JFrame {
                         "Error",
                         JOptionPane.ERROR_MESSAGE
                 );
-            } else if (!isValidEmail(inputEmail)) {
+            } else if (!utils.ValidationUtils.isValidEmail(inputEmail)) {
                 JOptionPane.showMessageDialog(
                         LoginUI.this,
                         "Please enter a valid email address!(email should be followed by @gmail.com)",
                         "Error",
                         JOptionPane.ERROR_MESSAGE
                 );
-            } else if (inputPassword.length == 0 || new String(inputPassword).equals("Enter your password")) {
+            } else if (inputPassword.length == 0 || new String(inputPassword).equals("Enter your password") ) {
                 JOptionPane.showMessageDialog(
                         LoginUI.this,
                         "Please enter a password!",
                         "Error",
                         JOptionPane.ERROR_MESSAGE
                 );
-            } else{
-                Admin admin= new Admin();
-                String passwordString=new String(inputPassword);
-                if(admin.verifyAdmin(inputEmail,passwordString)){
-                    JOptionPane.showMessageDialog(
-                            LoginUI.this,
-                            "Welcome, Admin!",
-                            "Success",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
-                }else {
-                    JOptionPane.showMessageDialog(
-                            LoginUI.this,
-                            "Invalid credentials. Please try again.",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE
-                    );
-                }
             }
         });
-
 
         registerPanel.add(titleLabel);
         registerPanel.add(Box.createVerticalStrut(10));
@@ -251,6 +252,9 @@ public class LoginUI extends JFrame {
         registerPanel.add(emailField);
         registerPanel.add(Box.createVerticalStrut(10));
         registerPanel.add(passwordField);
+        registerPanel.add(Box.createVerticalStrut(10));
+        registerPanel.add(uploadButton);
+        registerPanel.add(filePathLabel);
         registerPanel.add(Box.createVerticalStrut(10));
         registerPanel.add(registerBtn);
         registerPanel.add(Box.createVerticalStrut(20));
@@ -309,10 +313,10 @@ public class LoginUI extends JFrame {
             }
         });
     }
-    private boolean isValidEmail(String email) {
-        String emailRegex = "^[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}$"; // email validation
-        return email.matches(emailRegex);
-    }
+//    private boolean isValidEmail(String email) {
+//        String emailRegex = "^[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}$"; // email validation
+//        return email.matches(emailRegex);
+//    }
 
 
     public static void main(String[] args) {
