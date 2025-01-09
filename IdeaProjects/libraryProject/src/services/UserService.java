@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class UserService {
-    private static final String REGISTER_INFO ="C:\\Users\\Asus\\IdeaProjects\\libraryProject\\src\\data\\registerInfo.csv";
+    private static final String REGISTER_INFO ="D:\\OneDrive - itc.edu.kh\\teamProject\\IdeaProjects\\libraryProject\\src\\data\\registerInfo.csv";
     private static final int NAME_INDEX = 0;
     private static final int PASSWORD_INDEX = 2;
     private static final int EMAIL_INDEX = 1;
@@ -60,6 +60,11 @@ public void loadUsers() {
         CSVUtils.writeCSV(REGISTER_INFO, (List<String>) newUser);
         return true;
     }
+    // Get user by email
+    public User getUserByEmail(String email) {
+        return userMap.get(email);
+    }
+
     private List<String[]> convertUsersToStringArray(List<User> users) {
         List<String[]> data = new ArrayList<>();
         for (User user : users) {

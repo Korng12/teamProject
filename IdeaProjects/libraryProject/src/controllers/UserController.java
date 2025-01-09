@@ -16,4 +16,8 @@ public class UserController {
         User newUser = new Visitor(username, password, email);
         return userService.registerUser(newUser);  // Register the user using UserService
     }
+    // Get user by email
+    public User getUserByEmail(String email) {
+        return userService.getUserByEmail(email);
+    }
 }

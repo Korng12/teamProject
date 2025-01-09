@@ -1,2 +1,4 @@
-﻿name,email,gender,password
-Hak sengkea,sengkea@gmail.com,M,kea123456
+﻿name,email,password,role
+admin,admin@gmail.com,11112222,admin
+Hak sengkea,sengkea@gmail.com,kea12345,visitor
+hallo ,hallo@gmail.com,hallo12345,visitor
