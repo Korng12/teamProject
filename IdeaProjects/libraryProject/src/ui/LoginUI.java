@@ -1,14 +1,10 @@
 package ui;
-import controllers.BookController;
 import models.Admin;
-import services.UserService;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.util.ArrayList;
-
 import controllers.UserController;
 
 public class LoginUI extends JFrame {
@@ -25,7 +21,6 @@ public class LoginUI extends JFrame {
 
         cardPanel.add(CreateLoginForm(),"Login");
         cardPanel.add(CreateRegistrationForm(),"Registration");
-
         this.add(cardPanel);
         this.setFocusable(true);
         this.requestFocusInWindow();
@@ -112,10 +107,6 @@ public class LoginUI extends JFrame {
                 );
             } else{
                 if(userController.login(inputEmail,new String(inputPassword))){
-                    cardPanel.add(new UserDashboard(userController.getUserByEmail(inputEmail),cardLayout,cardPanel,new BookController()),"Dashboard");
-                    cardLayout.show(cardPanel,"Dashboard");
-                    setResizable(true);
-
                     JOptionPane.showMessageDialog(
                             LoginUI.this,
                             "Hello welcome",
