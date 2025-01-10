@@ -1,4 +1,5 @@
 package ui;
+import controllers.BookController;
 import models.Admin;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -6,6 +7,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import controllers.UserController;
+import models.User;
 
 public class LoginUI extends JFrame {
     private CardLayout cardLayout;
@@ -107,6 +109,9 @@ public class LoginUI extends JFrame {
                 );
             } else{
                 if(userController.login(inputEmail,new String(inputPassword))){
+                    cardPanel.add(new UserDashboard(userController.getUserByEmail(inputEmail),cardLayout,cardPanel,new BookController()),"Dashboard");
+                    cardLayout.show(cardPanel,"Dashboard");
+                    setResizable(true);
                     JOptionPane.showMessageDialog(
                             LoginUI.this,
                             "Hello welcome",
@@ -240,7 +245,32 @@ public class LoginUI extends JFrame {
                         "Error",
                         JOptionPane.ERROR_MESSAGE
                 );
+            }else{
+                // Handle registration logic
+                boolean registrationSuccess = userController.register(inputName, inputEmail, new String(inputPassword));
+                if (registrationSuccess) {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Registration successful! Please login.",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                    cardLayout.show(cardPanel, "Login");
+
+                    // Clear fields
+                    nameField.setText("");
+                    emailField.setText("");
+                    passwordField.setText("");
+                } else {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Registration failed. Please try again.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                }
             }
+
         });
 
         registerPanel.add(titleLabel);

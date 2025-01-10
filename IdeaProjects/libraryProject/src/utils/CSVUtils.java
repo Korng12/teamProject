@@ -33,10 +33,10 @@ public class CSVUtils {
 //        System.out.println("Total row read: "+data.size());
         return data;
     }
-    public static void writeCSV(String filePath,List<String >data){
+    public static void writeCSV(String filePath,List<String[]>data){
         // checked exception need to check at compile time, cuz file might not exist.
         try(BufferedWriter bw=new BufferedWriter(new FileWriter(filePath,true))){
-            for (String row:data){
+            for (String[] row : data){
                 bw.write(String.join(",",row));
                 bw.newLine();
             }

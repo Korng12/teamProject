@@ -1,1 +1,4 @@
 ﻿id,isbn,title,genre,author,imgPath,link,isAvailable
+1,978-3-16-148410-0,Atomic Habits,Self-Help,James Clear,images/books/atomicHabits.jpg,http://example.com/atomic-habits,true
+2,978-1-23-456789-0,Criminal Psychology,Psychology,John Doe,images/books/img.png,D:\OneDrive - itc.edu.kh\teamProject\IdeaProjects\libraryProject\src\data\Criminal-Psychology.pdf,true
+
