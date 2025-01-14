@@ -13,8 +13,8 @@ public class BookController {
     }
 
     // Method to add a new book
-    public boolean addBook(String isbn, String title, String genre, String author, String imgPath, String link, boolean isAvailable) {
-        Book newBook = new Book(isbn, title, genre, author, imgPath, link, isAvailable);
+    public boolean addBook(String isbn, String title, String genre, String author, String imgPath, String link, boolean isAvailable, String description) {
+        Book newBook = new Book(isbn, title, genre, author, imgPath, link, isAvailable ,description);
         return bookService.addBook(newBook);
     }
 
@@ -51,5 +51,25 @@ public class BookController {
             return true;
         }
         return false;
+    }
+
+    // Method to get all unique genres
+    public List<String> getAllGenres() {
+        return bookService.getUniqueGenres();
+    }
+
+    // Method to get all unique authors
+    public List<String> getAllAuthors() {
+        return bookService.getUniqueAuthors();
+    }
+
+    // Method to filter books by genre
+    public List<Book> getBooksByGenre(String genre) {
+        return bookService.getBooksByGenre(genre);
+    }
+
+    // Method to filter books by author
+    public List<Book> getBooksByAuthor(String author) {
+        return bookService.getBooksByAuthor(author);
     }
 }

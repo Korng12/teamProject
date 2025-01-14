@@ -39,7 +39,7 @@ public class MenuController {
                 cardLayout.show(cardPanel, "BorrowedBooks");
                 break;
             case "Back to previous":
-                cardLayout.show(cardPanel, "Previous");
+                cardLayout.previous(cardPanel);
                 break;
             case "New Arrivals":
                 cardLayout.show(cardPanel, "NewArrivals");

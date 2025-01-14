@@ -16,6 +16,7 @@ public class BookService {
     private static final int IMG_PATH_INDEX = 5;
     private static final int LINK_INDEX = 6;
     private static final int IS_AVAILABLE_INDEX = 7;
+    private static final int DESCRIPTION_INDEX = 8;
 
     private final Map<String, Book> bookMap; // HashMap for fast lookup (id as key)
     private final List<Book> bookList;      // ArrayList to store books in order
@@ -34,7 +35,7 @@ public class BookService {
     private void loadBooks() {
         List<String[]> rows = CSVUtils.readCSV(BOOKS_CSV);
         for (String[] row : rows) {
-            if (row.length >= 8) {
+            if (row.length >= 9) { // Ensure the row has all required fields
                 try {
                     Book book = new Book(
                             row[ID_INDEX],
@@ -44,7 +45,8 @@ public class BookService {
                             row[AUTHOR_INDEX],
                             row[IMG_PATH_INDEX],
                             row[LINK_INDEX],
-                            Boolean.parseBoolean(row[IS_AVAILABLE_INDEX])
+                            Boolean.parseBoolean(row[IS_AVAILABLE_INDEX]),
+                            row[DESCRIPTION_INDEX]
                     );
                     bookMap.put(book.getId(), book); // Add to HashMap
                     bookList.add(book); // Add to ArrayList
@@ -54,8 +56,6 @@ public class BookService {
                     if (bookId >= nextId) {
                         nextId = bookId + 1;
                     }
-
-                    System.out.println("Loaded book: " + book.getTitle());
                 } catch (Exception e) {
                     System.err.println("Error parsing row: " + String.join(",", row));
                     e.printStackTrace();
@@ -75,6 +75,14 @@ public class BookService {
     public boolean addBook(Book newBook) {
         if (newBook == null) {
             throw new IllegalArgumentException("Book cannot be null");
+        }
+
+        // Validate required fields
+        if (newBook.getIsbn() == null || newBook.getIsbn().trim().isEmpty() ||
+                newBook.getTitle() == null || newBook.getTitle().trim().isEmpty() ||
+                newBook.getGenre() == null || newBook.getGenre().trim().isEmpty() ||
+                newBook.getAuthor() == null || newBook.getAuthor().trim().isEmpty()) {
+            throw new IllegalArgumentException("ISBN, Title, Genre, and Author are required fields");
         }
 
         // Generate a new ID for the book
@@ -105,7 +113,8 @@ public class BookService {
                         book.getAuthor(),
                         book.getImgPath(),
                         book.getLink(),
-                        String.valueOf(book.isAvailable())
+                        String.valueOf(book.isAvailable()),
+                        book.getDescription()
                 })
                 .collect(Collectors.toList());
 
@@ -181,6 +190,18 @@ public class BookService {
     }
 
     /**
+     * Get books by author.
+     *
+     * @param author The author to filter by.
+     * @return A list of books by the specified author.
+     */
+    public List<Book> getBooksByAuthor(String author) {
+        return bookList.stream()
+                .filter(book -> book.getAuthor().equalsIgnoreCase(author))
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Get all unique genres.
      *
      * @return A list of all unique genres.
@@ -188,6 +209,18 @@ public class BookService {
     public List<String> getUniqueGenres() {
         return bookList.stream()
                 .map(Book::getGenre)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get all unique authors.
+     *
+     * @return A list of all unique authors.
+     */
+    public List<String> getUniqueAuthors() {
+        return bookList.stream()
+                .map(Book::getAuthor)
                 .distinct()
                 .collect(Collectors.toList());
     }
