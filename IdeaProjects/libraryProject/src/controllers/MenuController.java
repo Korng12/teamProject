@@ -16,7 +16,7 @@ public class MenuController {
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
         this.user = user;
-
+        System.out.println(user.getImgPath());
         System.out.println("MenuController initialized with user: " + user.getName()); // Debugging statement
     }
 
@@ -49,6 +49,9 @@ public class MenuController {
                 break;
         }
     }
+//    private JPanel availableBookPanel{
+//        JPanel panel =new JPanel(new BorderLayout())
+//    }
     private void showUserProfileDialog() {
         // Create a custom panel for the profile dialog
         JPanel profilePanel = new JPanel(new BorderLayout(10, 10));
@@ -56,7 +59,7 @@ public class MenuController {
         profilePanel.setBackground(new Color(245, 245, 245)); // Light gray background
 
         // Add a default photo (you can replace this with an actual image)
-        ImageIcon defaultPhoto = new ImageIcon(getClass().getResource("/images/thumbnails/library.jpg")); // Path to your default photo
+        ImageIcon defaultPhoto = new ImageIcon(user.getImgPath()); // Path to your default photo
         if (defaultPhoto.getImage() == null) {
             System.err.println("Image not found at the specified path."); // Debugging statement
             defaultPhoto = new ImageIcon(); // Fallback if the image is not found

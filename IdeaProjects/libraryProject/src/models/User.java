@@ -5,13 +5,14 @@ abstract public class User {
     //    protected String id;
     protected String password;
     protected String email;
-//    protected String imgPath;
+    protected String imgPath;
     protected String role;
 
-    public User(String name, String email,String password) {
+    public User(String name, String email,String password,String imgPath) {
         this.email = email;
         this.password = password;
         this.name=name;
+        this.imgPath=imgPath;
     }
 
     public String getName() {
@@ -27,6 +28,10 @@ abstract public class User {
     }
     public String getRole(){
         return role;
+    }
+
+    public String getImgPath() {
+        return imgPath;
     }
 }
 

@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class BookService {
-    private static final String BOOKS_CSV = "D:\\OneDrive - itc.edu.kh\\teamProject\\IdeaProjects\\libraryProject\\src\\data\\booksInfo.csv";
+    private static final String BOOKS_CSV = "src\\data\\booksInfo.csv";
     private static final int ID_INDEX = 0;
     private static final int ISBN_INDEX = 1;
     private static final int TITLE_INDEX = 2;

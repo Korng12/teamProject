@@ -8,10 +8,13 @@ import java.awt.event.*;
 import java.io.File;
 import controllers.UserController;
 import models.User;
+import utils.PlaceHolder;
 
 public class LoginUI extends JFrame {
     private CardLayout cardLayout;
     private JPanel cardPanel;
+    private String uniqueName;
+    private File selectedFile;
     private UserController userController =new UserController();
 
     LoginUI() {
@@ -53,8 +56,8 @@ public class LoginUI extends JFrame {
         JPasswordField passwordField = new JPasswordField();
 
 
-        addPlaceholder(emailField, "Enter your email");
-        addPasswordPlaceholder(passwordField, "Enter your password");
+        utils.PlaceHolder.addPlaceholder(emailField, "Enter your email");
+        utils.PlaceHolder.addPasswordPlaceholder(passwordField, "Enter your password");
 
         emailField.setMaximumSize(new Dimension(300, 30));
         passwordField.setMaximumSize(new Dimension(300, 30));
@@ -109,15 +112,22 @@ public class LoginUI extends JFrame {
                 );
             } else{
                 if(userController.login(inputEmail,new String(inputPassword))){
-                    cardPanel.add(new UserDashboard(userController.getUserByEmail(inputEmail),cardLayout,cardPanel,new BookController()),"Dashboard");
-                    cardLayout.show(cardPanel,"Dashboard");
-                    setResizable(true);
-                    JOptionPane.showMessageDialog(
-                            LoginUI.this,
-                            "Hello welcome",
-                            "Success",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
+                    User loggedInUser=userController.getUserByEmail(inputEmail);
+                    if(loggedInUser.getRole().equals("admin")){
+
+                    }else{
+                        cardPanel.add(new UserDashboard(userController.getUserByEmail(inputEmail),cardLayout,cardPanel,new BookController()),"Dashboard");
+                        cardLayout.show(cardPanel,"Dashboard");
+                        setResizable(true);
+                        JOptionPane.showMessageDialog(
+                                LoginUI.this,
+                                "Hello welcome",
+                                "Success",
+                                JOptionPane.INFORMATION_MESSAGE
+                        );
+
+                    }
+
                 }else {
                     JOptionPane.showMessageDialog(
                             LoginUI.this,
@@ -178,9 +188,9 @@ public class LoginUI extends JFrame {
         JPasswordField passwordField = new JPasswordField();
 
 
-        addPlaceholder(nameField,"Enter your name");
-        addPlaceholder(emailField, "Enter your email");
-        addPasswordPlaceholder(passwordField, "Enter your password");
+        utils.PlaceHolder.addPlaceholder(nameField,"Enter your name");
+        utils.PlaceHolder.addPlaceholder(emailField, "Enter your email");
+        utils.PlaceHolder.addPasswordPlaceholder(passwordField, "Enter your password");
         nameField.setMaximumSize(new Dimension(300,30));
         emailField.setMaximumSize(new Dimension(300, 30));
         passwordField.setMaximumSize(new Dimension(300, 30));
@@ -192,11 +202,12 @@ public class LoginUI extends JFrame {
         uploadButton.addActionListener(e->{
             JFileChooser fileChooser =new JFileChooser();
             fileChooser.setDialogTitle("Choose your profile picture");
-            fileChooser.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "png", "jpeg"));
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Image Files ", "jpg", "png", "jpeg"));
             int result=fileChooser.showOpenDialog(registerPanel);
             if(result==JFileChooser.APPROVE_OPTION){
-                File selectedFile = fileChooser.getSelectedFile();
+                 selectedFile = fileChooser.getSelectedFile();
                 filePathLabel.setText("Selected: "+selectedFile.getName());
+
             }else{
                 filePathLabel.setText("No file selected");
             }
@@ -223,7 +234,6 @@ public class LoginUI extends JFrame {
             if(inputName.isEmpty() || inputName.equals("Enter your name") ){
                 JOptionPane.showMessageDialog(this,"Please enter your name","error",JOptionPane.ERROR_MESSAGE);
             }
-
             else if (inputEmail.isEmpty() || inputEmail.equals("Enter your email") ) {
                 JOptionPane.showMessageDialog(
                         this,
@@ -245,9 +255,19 @@ public class LoginUI extends JFrame {
                         "Error",
                         JOptionPane.ERROR_MESSAGE
                 );
-            }else{
+
+            }else if(selectedFile ==null){
+                JOptionPane.showMessageDialog(this,"Please select your profile","Error",JOptionPane.ERROR_MESSAGE);
+            }
+            else{
+                uniqueName = utils.FileUtils.saveImage(selectedFile);
+                System.out.println(uniqueName);
+                if(uniqueName ==null){
+                    JOptionPane.showMessageDialog(this,"Error saving profile picture!","Error",JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 // Handle registration logic
-                boolean registrationSuccess = userController.register(inputName, inputEmail, new String(inputPassword));
+                boolean registrationSuccess = userController.register(inputName, inputEmail, new String(inputPassword),uniqueName);
                 if (registrationSuccess) {
                     JOptionPane.showMessageDialog(
                             this,
@@ -255,6 +275,7 @@ public class LoginUI extends JFrame {
                             "Success",
                             JOptionPane.INFORMATION_MESSAGE
                     );
+
                     cardLayout.show(cardPanel, "Login");
 
                     // Clear fields
@@ -295,60 +316,12 @@ public class LoginUI extends JFrame {
         return registrationContainer;
     }
 
-    private void addPlaceholder(JTextField field, String placeholder) {
-        field.setText(placeholder);
-        field.setForeground(Color.GRAY);
 
-        field.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (field.getText().equals(placeholder)) {
-                    field.setText("");
-                    field.setForeground(Color.BLACK);
-                }
-            }
 
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (field.getText().isEmpty()) {
-                    field.setText(placeholder);
-                    field.setForeground(Color.GRAY);
-                }
-            }
-        });
-    }
-
-    private void addPasswordPlaceholder(JPasswordField field, String placeholder) {
-        field.setText(placeholder);
-        field.setForeground(Color.GRAY);
-        field.setEchoChar((char) 0); // Makes the text visible like a placeholder
-
-        field.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (new String(field.getPassword()).equals(placeholder)) {
-                    field.setText("");
-                    field.setForeground(Color.BLACK);
-                    field.setEchoChar('•'); // Hides characters when typing
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (field.getPassword().length == 0) {
-                    field.setText(placeholder);
-                    field.setForeground(Color.GRAY);
-                    field.setEchoChar((char) 0); // Makes the placeholder visible again
-                }
-            }
-        });
-    }
 //    private boolean isValidEmail(String email) {
 //        String emailRegex = "^[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}$"; // email validation
 //        return email.matches(emailRegex);
 //    }
-
-
     public static void main(String[] args) {
         new LoginUI();
     }
