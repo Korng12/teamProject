@@ -84,7 +84,7 @@ public class UserDashboard extends JPanel {
         userSection.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Padding
 
         // Logout button
-        JButton logoutButton = createStyledButton.create("Log out", new Color(180, 34, 34)); // Red button
+        JButton logoutButton = createStyledButton.create("Log out", new Color(136, 30, 30)); // Red button
         logoutButton.setFont(new Font("Arial", Font.PLAIN, 14));
         logoutButton.setForeground(Color.WHITE);
         logoutButton.setFocusPainted(false);
