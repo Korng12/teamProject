@@ -1,3 +1,12 @@
+<<<<<<< HEAD
 ﻿name,email,password,role,imgPath
 admin,admin@gmail.com,11112222,admin,user_20250113113052_128.jpg
 sengkea,sengkea@gmail.com,kea12345,visitor,user_20250113103708_216.jpg
+=======
+﻿name,email,password,role
+admin,admin@gmail.com,11112222,admin
+Hak sengkea,sengkea@gmail.com,kea12345,visitor
+utaike,utaike@gmail.com,Utaike12345
+JJJJJJJJJJ,J@gmail.com,J12345
+Anchhy,chhy@gmail.com,123123123
+>>>>>>> 37b772dc60ef6abbc6ecbf4a20d37f3f0daf083b

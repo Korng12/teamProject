@@ -1,4 +1,13 @@
+<<<<<<< HEAD
 ﻿id,isbn,title,genre,author,imgPath,link,isAvailable
 1,978-3-16-148410-0,Atomic Habits,Self-Help,James Clear,images/books/atomicHabits.jpg,http://example.com/atomic-habits,true
 2,978-1-23-456789-0,Criminal Psychology,Psychology,John Doe,images/books/img.png,src\data\Criminal-Psychology.pdf,true
+=======
+﻿id,isbn,title,genre,author,imgPath,link,isAvailable,description
+1,978-3-16-148410-0,Atomic Habits,Self-Help,James Clear,images/books/atomicHabits.jpg,IdeaProjects/libraryProject/src/data/PDF/Atomic habits.pdf,true,"A practical guide to building good habits and breaking bad ones, offering actionable strategies for personal improvement."
+2,978-1-23-456789-0,Criminal Psychology,Psychology,John Doe,images/books/img.png,IdeaProjects/libraryProject/src/data/PDF/Criminal-Psychology.pdf,false,"An exploration of the psychological factors behind criminal behavior, providing insights into the minds of offenders."
+
+
+
+>>>>>>> 37b772dc60ef6abbc6ecbf4a20d37f3f0daf083b
 

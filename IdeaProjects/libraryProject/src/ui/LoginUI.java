@@ -1,4 +1,6 @@
 package ui;
+
+import utils.createStyledButton;
 import controllers.BookController;
 import models.Admin;
 import javax.swing.*;
@@ -34,7 +36,7 @@ public class LoginUI extends JFrame {
     }
     private JPanel CreateLoginForm(){
         JPanel loginContainer = new JPanel(new BorderLayout());
-        ImageIcon imageIcon = new ImageIcon("src/images/thumbnails/library.jpg");
+        ImageIcon imageIcon = new ImageIcon(getClass().getResource("/images/thumbnails/library.jpg"));
         Image scaledImage = imageIcon.getImage().getScaledInstance(600, 500, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
         JLabel imgLabel = new JLabel(scaledIcon);
@@ -62,7 +64,7 @@ public class LoginUI extends JFrame {
         emailField.setMaximumSize(new Dimension(300, 30));
         passwordField.setMaximumSize(new Dimension(300, 30));
 
-        JButton loginButton = new JButton("Login");
+        JButton loginButton = createStyledButton.create("Login",new Color(153, 153, 255));
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPanel createAccPanel = new JPanel();
@@ -112,6 +114,7 @@ public class LoginUI extends JFrame {
                 );
             } else{
                 if(userController.login(inputEmail,new String(inputPassword))){
+<<<<<<< HEAD
                     User loggedInUser=userController.getUserByEmail(inputEmail);
                     if(loggedInUser.getRole().equals("admin")){
 
@@ -128,6 +131,21 @@ public class LoginUI extends JFrame {
 
                     }
 
+=======
+                    cardPanel.add(new UserDashboard(userController.getUserByEmail(inputEmail),cardLayout,cardPanel,new BookController()),"Dashboard");
+                    cardLayout.show(cardPanel,"Dashboard");
+                    setResizable(true);
+
+                    addPlaceholder(emailField, "Enter your email");
+                    addPasswordPlaceholder(passwordField, "Enter your password");
+//                    JOptionPane.showMessageDialog(
+//                      emailField.setText("Enter your email");
+//                    passwordField.setText("Enter your password");      LoginUI.this,
+//                            "Hello welcome",
+//                            "Success",
+//                            JOptionPane.INFORMATION_MESSAGE
+//                    );
+>>>>>>> 37b772dc60ef6abbc6ecbf4a20d37f3f0daf083b
                 }else {
                     JOptionPane.showMessageDialog(
                             LoginUI.this,
@@ -160,7 +178,7 @@ public class LoginUI extends JFrame {
         return loginContainer;
     }
     private JPanel CreateRegistrationForm(){
-        ImageIcon imageIcon = new ImageIcon("src/images/thumbnails/library.jpg");
+        ImageIcon imageIcon = new ImageIcon("D:\\OneDrive - itc.edu.kh\\teamProject\\IdeaProjects\\libraryProject\\src\\images\\thumbnails\\library.jpg");
         Image scaledImage = imageIcon.getImage().getScaledInstance(600, 500, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
         JLabel imgLabel = new JLabel(scaledIcon);
@@ -194,7 +212,7 @@ public class LoginUI extends JFrame {
         nameField.setMaximumSize(new Dimension(300,30));
         emailField.setMaximumSize(new Dimension(300, 30));
         passwordField.setMaximumSize(new Dimension(300, 30));
-        JButton uploadButton=new JButton("Choose profile");
+        JButton uploadButton=createStyledButton.create("Choose profile",new Color(153, 153, 255));
         JLabel filePathLabel=new JLabel();
         uploadButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         filePathLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -225,7 +243,7 @@ public class LoginUI extends JFrame {
             }
         });
 
-        JButton registerBtn =new JButton("Register");
+        JButton registerBtn =createStyledButton.create("Register",new Color(153, 153, 255));
         registerBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         registerBtn.addActionListener(e -> {
             String inputName=nameField.getText().trim();
