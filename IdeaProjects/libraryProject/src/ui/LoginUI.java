@@ -12,6 +12,9 @@ import controllers.UserController;
 import models.User;
 import utils.PlaceHolder;
 
+import static utils.PlaceHolder.addPasswordPlaceholder;
+import static utils.PlaceHolder.addPlaceholder;
+
 public class LoginUI extends JFrame {
     private CardLayout cardLayout;
     private JPanel cardPanel;
@@ -58,8 +61,8 @@ public class LoginUI extends JFrame {
         JPasswordField passwordField = new JPasswordField();
 
 
-        utils.PlaceHolder.addPlaceholder(emailField, "Enter your email");
-        utils.PlaceHolder.addPasswordPlaceholder(passwordField, "Enter your password");
+        addPlaceholder(emailField, "Enter your email");
+        addPasswordPlaceholder(passwordField, "Enter your password");
 
         emailField.setMaximumSize(new Dimension(300, 30));
         passwordField.setMaximumSize(new Dimension(300, 30));
@@ -114,7 +117,7 @@ public class LoginUI extends JFrame {
                 );
             } else{
                 if(userController.login(inputEmail,new String(inputPassword))){
-<<<<<<< HEAD
+//<<<<<<< HEAD
                     User loggedInUser=userController.getUserByEmail(inputEmail);
                     if(loggedInUser.getRole().equals("admin")){
 
@@ -131,7 +134,7 @@ public class LoginUI extends JFrame {
 
                     }
 
-=======
+//=======
                     cardPanel.add(new UserDashboard(userController.getUserByEmail(inputEmail),cardLayout,cardPanel,new BookController()),"Dashboard");
                     cardLayout.show(cardPanel,"Dashboard");
                     setResizable(true);
@@ -145,7 +148,7 @@ public class LoginUI extends JFrame {
 //                            "Success",
 //                            JOptionPane.INFORMATION_MESSAGE
 //                    );
->>>>>>> 37b772dc60ef6abbc6ecbf4a20d37f3f0daf083b
+//>>>>>>> 37b772dc60ef6abbc6ecbf4a20d37f3f0daf083b
                 }else {
                     JOptionPane.showMessageDialog(
                             LoginUI.this,
@@ -206,9 +209,9 @@ public class LoginUI extends JFrame {
         JPasswordField passwordField = new JPasswordField();
 
 
-        utils.PlaceHolder.addPlaceholder(nameField,"Enter your name");
-        utils.PlaceHolder.addPlaceholder(emailField, "Enter your email");
-        utils.PlaceHolder.addPasswordPlaceholder(passwordField, "Enter your password");
+        addPlaceholder(nameField,"Enter your name");
+        addPlaceholder(emailField, "Enter your email");
+        addPasswordPlaceholder(passwordField, "Enter your password");
         nameField.setMaximumSize(new Dimension(300,30));
         emailField.setMaximumSize(new Dimension(300, 30));
         passwordField.setMaximumSize(new Dimension(300, 30));
