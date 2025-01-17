@@ -1,5 +1,7 @@
 package ui;
 
+import controllers.AdminController;
+import controllers.MenuController;
 import utils.createStyledButton;
 import controllers.BookController;
 import models.Admin;
@@ -10,8 +12,6 @@ import java.awt.event.*;
 import java.io.File;
 import controllers.UserController;
 import models.User;
-import utils.PlaceHolder;
-
 import static utils.PlaceHolder.addPasswordPlaceholder;
 import static utils.PlaceHolder.addPlaceholder;
 
@@ -117,10 +117,12 @@ public class LoginUI extends JFrame {
                 );
             } else{
                 if(userController.login(inputEmail,new String(inputPassword))){
-//<<<<<<< HEAD
+
                     User loggedInUser=userController.getUserByEmail(inputEmail);
                     if(loggedInUser.getRole().equals("admin")){
-
+                        AdminController adminController =new AdminController();
+                        cardPanel.add(new AdminDashboard(userController.getUserByEmail(inputEmail), adminController,cardLayout,cardPanel),"AdminDashboard");
+                        cardLayout.show(cardPanel,"AdminDashboard");
                     }else{
                         cardPanel.add(new UserDashboard(userController.getUserByEmail(inputEmail),cardLayout,cardPanel,new BookController()),"Dashboard");
                         cardLayout.show(cardPanel,"Dashboard");
@@ -134,21 +136,6 @@ public class LoginUI extends JFrame {
 
                     }
 
-//=======
-                    cardPanel.add(new UserDashboard(userController.getUserByEmail(inputEmail),cardLayout,cardPanel,new BookController()),"Dashboard");
-                    cardLayout.show(cardPanel,"Dashboard");
-                    setResizable(true);
-
-                    addPlaceholder(emailField, "Enter your email");
-                    addPasswordPlaceholder(passwordField, "Enter your password");
-//                    JOptionPane.showMessageDialog(
-//                      emailField.setText("Enter your email");
-//                    passwordField.setText("Enter your password");      LoginUI.this,
-//                            "Hello welcome",
-//                            "Success",
-//                            JOptionPane.INFORMATION_MESSAGE
-//                    );
-//>>>>>>> 37b772dc60ef6abbc6ecbf4a20d37f3f0daf083b
                 }else {
                     JOptionPane.showMessageDialog(
                             LoginUI.this,
@@ -157,7 +144,10 @@ public class LoginUI extends JFrame {
                             JOptionPane.ERROR_MESSAGE
                     );
                 }
+
             }
+            addPlaceholder(emailField, "Enter your email");
+            addPasswordPlaceholder(passwordField, "Enter your password");
         });
         loginPanel.add(titleLabel);
         loginPanel.add(Box.createVerticalStrut(10));
@@ -181,7 +171,7 @@ public class LoginUI extends JFrame {
         return loginContainer;
     }
     private JPanel CreateRegistrationForm(){
-        ImageIcon imageIcon = new ImageIcon("D:\\OneDrive - itc.edu.kh\\teamProject\\IdeaProjects\\libraryProject\\src\\images\\thumbnails\\library.jpg");
+        ImageIcon imageIcon = new ImageIcon("src\\images\\thumbnails\\library.jpg");
         Image scaledImage = imageIcon.getImage().getScaledInstance(600, 500, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
         JLabel imgLabel = new JLabel(scaledIcon);
@@ -296,13 +286,13 @@ public class LoginUI extends JFrame {
                             "Success",
                             JOptionPane.INFORMATION_MESSAGE
                     );
-
+                    filePathLabel.setText("");
                     cardLayout.show(cardPanel, "Login");
 
                     // Clear fields
-                    nameField.setText("");
-                    emailField.setText("");
-                    passwordField.setText("");
+                    addPlaceholder(nameField,"Enter your name");
+                    addPlaceholder(emailField, "Enter your email");
+                    addPasswordPlaceholder(passwordField, "Enter your password");
                 } else {
                     JOptionPane.showMessageDialog(
                             this,

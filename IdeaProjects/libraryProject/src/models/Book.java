@@ -53,6 +53,7 @@ public class Book {
     public boolean isAvailable() { return isAvailable; }
     public String getDescription() { return description; }
 
+
     // Setters
     public void setId(String id) { this.id = id; } // For auto-generated IDs
     public void setIsbn(String isbn) { this.isbn = isbn; }

@@ -40,7 +40,6 @@ public class SearchBar extends JPanel {
         searchField = createSearchField();
         categoryFilter = createFilterDropdown("All Categories");
         authorFilter = createFilterDropdown("All Authors");
-
         setupLayout();
         loadFilterData();
         setupSearchTriggers();
