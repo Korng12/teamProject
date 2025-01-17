@@ -1,6 +1,7 @@
 package models;
 
 abstract public class User {
+
     protected String name;
     //    protected String id;
     protected String password;

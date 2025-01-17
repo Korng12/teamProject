@@ -7,6 +7,7 @@ import controllers.BookController;
 import org.apache.pdfbox.pdmodel.PDDocument; // For handling PDF files
 import ui.components.*;
 import ui.components.Menu;
+import utils.createStyledButton;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static utils.ImageLoader.loadImageIcon;
 
 public class UserDashboard extends JPanel {
     // Instance variables
@@ -53,75 +56,6 @@ public class UserDashboard extends JPanel {
         add(mainContent, BorderLayout.CENTER);
     }
 
-<<<<<<< HEAD
-    // Method to create the header panel
-    private JPanel createHeader() {
-        JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(new Color(153, 153, 255)); // Purple background
-        header.setPreferredSize(new Dimension(getWidth(), 80)); // Set height of the header
-
-        // Logo and library name section
-        JPanel logoSection = new JPanel();
-        logoSection.setOpaque(false); // Transparent background
-        logoSection.setLayout(new BoxLayout(logoSection, BoxLayout.X_AXIS)); // Horizontal layout
-        logoSection.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Padding
-
-        // Load and resize the logo image
-        ImageIcon logoIcon = loadImageIcon("/images/thumbnails/library.jpg", 40, 40);
-        JLabel logo = new JLabel(logoIcon);
-        logoSection.add(logo);
-
-        // Add spacing between logo and library name
-        logoSection.add(Box.createRigidArea(new Dimension(10, 0)));
-
-        // Add the library name
-        JLabel libraryName = new JLabel("Imagine Library");
-        libraryName.setFont(new Font("Arial", Font.BOLD, 20));
-        libraryName.setForeground(Color.WHITE); // White text color
-        logoSection.add(libraryName);
-
-        // User section with logout button
-        JPanel userSection = new JPanel();
-        userSection.setOpaque(false); // Transparent background
-        userSection.setLayout(new BoxLayout(userSection, BoxLayout.X_AXIS)); // Horizontal layout
-        userSection.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Padding
-
-        // Logout button
-        JButton logoutButton = createStyledButton.create("Log out", new Color(136, 30, 30)); // Red button
-        logoutButton.setFont(new Font("Arial", Font.PLAIN, 14));
-        logoutButton.setForeground(Color.WHITE);
-        logoutButton.setFocusPainted(false);
-
-        // Logout functionality
-        logoutButton.addActionListener(e -> {
-            cardLayout.show(cardPanel, "Login"); // Switch to login panel
-            JOptionPane.showMessageDialog(UserDashboard.this, "Logged out successfully!", "Logout", JOptionPane.INFORMATION_MESSAGE);
-        });
-        userSection.add(logoutButton);
-
-        // Welcome message in the center
-        JPanel welcomePanel = new JPanel(new GridBagLayout());
-        welcomePanel.setOpaque(false); // Transparent background
-
-        JLabel welcomeLabel = new JLabel("Welcome, " + user.getName());
-        welcomeLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        welcomeLabel.setForeground(Color.WHITE);
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.CENTER; // Center the label
-        welcomePanel.add(welcomeLabel, gbc);
-
-        // Add sections to the header
-        header.add(logoSection, BorderLayout.WEST); // Logo and library name on the left
-        header.add(welcomePanel, BorderLayout.CENTER); // Welcome message in the center
-        header.add(userSection, BorderLayout.EAST); // Logout button on the right
-
-        return header;
-    }
-
-    // Method to create the menu panel
     private JPanel createMenu() {
         JPanel menuPanel = new JPanel();
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS)); // Vertical layout
@@ -155,11 +89,6 @@ public class UserDashboard extends JPanel {
         return wrapperPanel;
     }
 
-    // Method to create the main content panel
-=======
-    // Method to create the main content panel (search bar and book list)
-    // Method to create the main content panel (search bar and book list)
->>>>>>> 37b772dc60ef6abbc6ecbf4a20d37f3f0daf083b
     private JPanel createMainContent() {
         JPanel mainContent = new JPanel();
         mainContent.setLayout(new BorderLayout());
@@ -319,6 +248,7 @@ public class UserDashboard extends JPanel {
     private void handleLogout() {
         cardLayout.show(cardPanel, "Login"); // Switch to the login panel
         JOptionPane.showMessageDialog(this, "Logged out successfully!", "Logout", JOptionPane.INFORMATION_MESSAGE); // Show logout message
+
     }
 
     // Method to open a PDF file

@@ -64,6 +64,7 @@ public class BookService {
                 System.err.println("Invalid row in CSV: " + String.join(",", row));
             }
         }
+        System.out.println("Total Books: "+getTotalBooks());
     }
 
     /**
@@ -129,6 +130,9 @@ public class BookService {
      */
     public List<Book> getAllBooks() {
         return new ArrayList<>(bookList); // Return a copy to prevent external modification
+    }
+    public int getTotalBooks(){
+        return bookList.size();
     }
 
     /**
@@ -224,4 +228,19 @@ public class BookService {
                 .distinct()
                 .collect(Collectors.toList());
     }
+    public List<Book> getAvailableBooks() {
+        return bookList.stream()
+                .filter(Book::isAvailable)
+                .collect(Collectors.toList());
+    }
+    public int getTotalAvailableBooks() {
+        int count = 0;
+        for (Book book : bookList) {
+            if (book.isAvailable()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
 }
