@@ -286,13 +286,13 @@ public class LoginUI extends JFrame {
                             "Success",
                             JOptionPane.INFORMATION_MESSAGE
                     );
-
+                    filePathLabel.setText("");
                     cardLayout.show(cardPanel, "Login");
 
                     // Clear fields
-                    nameField.setText("");
-                    emailField.setText("");
-                    passwordField.setText("");
+                    addPlaceholder(nameField,"Enter your name");
+                    addPlaceholder(emailField, "Enter your email");
+                    addPasswordPlaceholder(passwordField, "Enter your password");
                 } else {
                     JOptionPane.showMessageDialog(
                             this,
