@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class UserService {
-    private static final String REGISTER_INFO ="src\\data\\registerInfo.csv";
+    private static final String REGISTER_INFO ="IdeaProjects/libraryProject/src/data/registerInfo.csv";
     private static final int NAME_INDEX = 0;
     private static final int PASSWORD_INDEX = 2;
     private static final int EMAIL_INDEX = 1;

@@ -1,6 +1,10 @@
 package controllers;
 
 import models.User;
+import ui.BorrowBookFrame;
+import ui.ReturnBook;
+import ui.ViewTransactionHistory;
+
 import java.awt.CardLayout;
 import javax.swing.*;
 import java.awt.*;
@@ -11,13 +15,18 @@ public class MenuController {
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private User user;
+    private BookController bookController; // Required for BorrowBookFrame
+    private TransactionController transactionController;
 
     public MenuController(User user, CardLayout cardLayout, JPanel cardPanel) {
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
         this.user = user;
-        System.out.println(user.getImgPath());
-        System.out.println("MenuController initialized with user: " + user.getName()); // Debugging statement
+        this.bookController = new BookController();
+        this.transactionController = new TransactionController();
+
+//        System.out.println(user.getImgPath());
+//        System.out.println("MenuController initialized with user: " + user.getName()); // Debugging statement
     }
 
     public void handleMenuButtonClick(String menuItem) {
@@ -30,13 +39,13 @@ public class MenuController {
                 showUserProfileDialog();
                 break;
             case "Borrow Book":
-                cardLayout.show(cardPanel, "BorrowBook");
+                BorrowBook();
                 break;
             case "Return Book":
-                cardLayout.show(cardPanel, "ReturnBook");
+                ReturnBook();
                 break;
             case "Borrowed books":
-                cardLayout.show(cardPanel, "BorrowedBooks");
+                ViewHistory();
                 break;
             case "Back to previous":
                 cardLayout.previous(cardPanel);
@@ -52,6 +61,21 @@ public class MenuController {
 //    private JPanel availableBookPanel{
 //        JPanel panel =new JPanel(new BorderLayout())
 //    }
+    private void ReturnBook(){
+        ReturnBook returnBook = new ReturnBook(cardLayout,cardPanel,user);
+        cardPanel.add(returnBook, "ReturnBook");
+        cardLayout.show(cardPanel,"ReturnBook");
+    }
+    private void ViewHistory(){
+        ViewTransactionHistory viewTransactionHistory = new ViewTransactionHistory(cardLayout,cardPanel,user);
+        cardPanel.add(viewTransactionHistory, "BorrowedBooks");
+        cardLayout.show(cardPanel,"BorrowedBooks");
+    }
+    private void BorrowBook(){
+        BorrowBookFrame borrowBookFrame = new BorrowBookFrame(user,cardLayout,cardPanel,bookController,transactionController);
+        cardPanel.add(borrowBookFrame,"BorrowBook");
+        cardLayout.show(cardPanel,"BorrowBook");
+    }
     private void showUserProfileDialog() {
         // Create a custom panel for the profile dialog
         JPanel profilePanel = new JPanel(new BorderLayout(10, 10));

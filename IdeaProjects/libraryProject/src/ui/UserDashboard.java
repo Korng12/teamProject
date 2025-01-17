@@ -7,6 +7,7 @@ import controllers.BookController;
 import org.apache.pdfbox.pdmodel.PDDocument; // For handling PDF files
 import ui.components.*;
 import ui.components.Menu;
+import utils.createStyledButton;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static utils.ImageLoader.loadImageIcon;
 
 public class UserDashboard extends JPanel {
     // Instance variables
@@ -53,7 +56,7 @@ public class UserDashboard extends JPanel {
         add(mainContent, BorderLayout.CENTER);
     }
 
-<<<<<<< HEAD
+//<<<<<<< HEAD
     // Method to create the header panel
     private JPanel createHeader() {
         JPanel header = new JPanel(new BorderLayout());
@@ -156,10 +159,10 @@ public class UserDashboard extends JPanel {
     }
 
     // Method to create the main content panel
-=======
-    // Method to create the main content panel (search bar and book list)
-    // Method to create the main content panel (search bar and book list)
->>>>>>> 37b772dc60ef6abbc6ecbf4a20d37f3f0daf083b
+//=======
+//    // Method to create the main content panel (search bar and book list)
+//    // Method to create the main content panel (search bar and book list)
+//>>>>>>> 37b772dc60ef6abbc6ecbf4a20d37f3f0daf083b
     private JPanel createMainContent() {
         JPanel mainContent = new JPanel();
         mainContent.setLayout(new BorderLayout());
@@ -268,13 +271,13 @@ public class UserDashboard extends JPanel {
         // Create pagination controls (Prev, page numbers, Next)
         JPanel paginationPanel = new JPanel();
         paginationPanel.setBackground(Color.white);
-        JButton prevButton = new JButton("Prev");
-        JButton nextButton = new JButton("Next");
+        JButton prevButton = createStyledButton.create("Prev",new Color(90, 160, 255));
+        JButton nextButton = createStyledButton.create("Next",new Color(90, 160, 255));
         paginationPanel.add(prevButton);
 
         // Add page number buttons (e.g., 1, 2, 3, etc.)
         for (int i = 0; i < totalPages; i++) {
-            JButton pageButton = new JButton(String.valueOf(i + 1)); // Page numbers start from 1
+            JButton pageButton = createStyledButton.create(String.valueOf(i + 1),new Color(90, 160, 255)); // Page numbers start from 1
             int pageIndex = i; // Store the page index for the action listener
             pageButton.addActionListener(e -> {
                 currentPage[0] = pageIndex; // Update the current page

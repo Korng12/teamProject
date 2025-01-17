@@ -1,6 +1,8 @@
 package ui.components;
 
 import models.Book;
+import utils.createStyledButton;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -9,7 +11,11 @@ import java.awt.event.MouseEvent;
 import static utils.ImageLoader.loadImageIcon;
 
 public class BookCard extends JPanel {
-    public BookCard(Book book, Runnable readAction, Runnable viewDetailsAction) {
+    private final Book book; // Store the book object
+    private final JButton actionButton; // Store the action button for later updates
+
+    public BookCard(Book book, Runnable action, Runnable viewDetailsAction) {
+        this.book = book; // Initialize the book object
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS)); // Vertical layout
         setPreferredSize(new Dimension(180, 260)); // Set card size
         setBackground(Color.WHITE); // White background
@@ -20,7 +26,7 @@ public class BookCard extends JPanel {
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // Change cursor to hand on hover
 
         // Load the book image
-        ImageIcon originalIcon = loadImageIcon(book.getImgPath(), 120, 160); // Load and resize image
+        ImageIcon originalIcon = loadImageIcon(book.getImgPath(), 100, 140); // Load and resize image
         JLabel bookImage = new JLabel(originalIcon);
         bookImage.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the image
 
@@ -36,14 +42,15 @@ public class BookCard extends JPanel {
         authorLabel.setForeground(new Color(100, 100, 100)); // Medium gray text
         authorLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the author
 
-        // Create and style the Read button
-        JButton readButton = new JButton("Read");
-        readButton.setFont(new Font("Arial", Font.PLAIN, 12)); // Font for button
-        readButton.setBackground(new Color(90, 160, 255)); // Light blue background
-        readButton.setForeground(Color.WHITE); // White text
-        readButton.setFocusPainted(false); // Remove focus border
-        readButton.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the button
-        readButton.addActionListener(e -> readAction.run()); // Action for Read button
+        // Determine button label
+        String buttonLabel = action.getClass().getSimpleName().toLowerCase().contains("borrow")
+                ? "Borrow" : "Read";
+
+        // Create and style the action button
+        actionButton = createStyledButton.create(buttonLabel, new Color(0, 100, 225));
+        actionButton.setFont(new Font("Arial", Font.PLAIN, 12)); // Font for button
+        actionButton.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the button
+        actionButton.addActionListener(e -> action.run()); // Set button action
 
         // Add components to the book card
         add(bookImage);
@@ -52,7 +59,7 @@ public class BookCard extends JPanel {
         add(Box.createVerticalStrut(5)); // Add vertical spacing
         add(authorLabel);
         add(Box.createVerticalStrut(10)); // Add vertical spacing
-        add(readButton); // Add the Read button
+        add(actionButton); // Add the action button
 
         // Add hover effect
         addMouseListener(new MouseAdapter() {
@@ -61,7 +68,7 @@ public class BookCard extends JPanel {
                 setBackground(new Color(245, 245, 245)); // Light gray background on hover
                 setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(new Color(180, 180, 180), 1), // Darker border on hover
-                        BorderFactory.createEmptyBorder(5, 5, 5, 5) // Padding for shadow effect
+                        BorderFactory.createEmptyBorder(10, 10, 10, 10) // Maintain padding
                 ));
             }
 
@@ -69,26 +76,32 @@ public class BookCard extends JPanel {
             public void mouseExited(MouseEvent evt) {
                 setBackground(Color.WHITE); // Reset background color
                 setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(new Color(200, 200, 200), 1), // Reset border
-                        BorderFactory.createEmptyBorder(5, 5, 5, 5) // Padding for shadow effect
+                        BorderFactory.createLineBorder(new Color(230, 230, 230), 1), // Reset border
+                        BorderFactory.createEmptyBorder(10, 10, 10, 10) // Maintain padding
                 ));
             }
         });
 
-        // Add click listener to redirect to the book details screen
+        // Add click listener for book details
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
-                // Check if the source is a BookCard
-                if (evt.getSource() instanceof BookCard) {
-                    // If the click wasn't on the Read button inside the BookCard
-                    if (evt.getComponent() != readButton) {
-                        // Trigger the view details action
-                        viewDetailsAction.run();
-                    }
+                if (evt.getSource() == BookCard.this && evt.getComponent() != actionButton) {
+                    viewDetailsAction.run();
                 }
             }
         });
+    }
 
+    /**
+     * Updates the availability status of the book in the UI.
+     * Disables the action button and changes its text and color if the book is unavailable.
+     */
+    public void updateAvailability() {
+        if (!book.isAvailable()) {
+            actionButton.setEnabled(false); // Disable the borrow button
+            actionButton.setText("Unavailable");
+            actionButton.setBackground(Color.GRAY);
+        }
     }
 }

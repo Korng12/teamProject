@@ -73,4 +73,7 @@ public class BookController {
     public List<Book> getBooksByAuthor(String author) {
         return bookService.getBooksByAuthor(author);
     }
+    public Book getBooksByID(String id) {
+        return bookService.getBookById(id);
+    }
 }

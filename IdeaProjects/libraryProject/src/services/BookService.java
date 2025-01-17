@@ -7,7 +7,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class BookService {
-    private static final String BOOKS_CSV = "src\\data\\booksInfo.csv";
+    private static final  String HEADER_CSV = "id,isbn,title,genre,author,imgPath,link,isAvailable,description";
+    private static final String BOOKS_CSV = "IdeaProjects/libraryProject/src/data/booksInfo.csv";
     private static final int ID_INDEX = 0;
     private static final int ISBN_INDEX = 1;
     private static final int TITLE_INDEX = 2;
@@ -119,7 +120,7 @@ public class BookService {
                 .collect(Collectors.toList());
 
         // Write to CSV
-        CSVUtils.writeCSV(BOOKS_CSV, data);
+        CSVUtils.updateCSV(BOOKS_CSV, data,HEADER_CSV);
     }
 
     /**

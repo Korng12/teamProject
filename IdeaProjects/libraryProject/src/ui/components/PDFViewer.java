@@ -2,9 +2,17 @@ package ui.components;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.rendering.PageDrawer;
+import org.apache.pdfbox.rendering.PageDrawerParameters;
+import utils.createStyledButton;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -18,7 +26,10 @@ public class PDFViewer extends JPanel {
     private JButton nextButton; // Button to navigate to the next page in horizontal mode
     private JButton previousButton; // Button to navigate to the previous page in horizontal mode
     private JButton toggleModeButton; // Button to switch between vertical and horizontal modes
+    private double scale = 1.0; // Scale factor for zooming
+    private Point dragStart; // Tracks the starting point for panning
 
+    // Constructor to initialize the PDF viewer
     public PDFViewer(String pdfPath, CardLayout cardLayout, JPanel cardPanel) {
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
@@ -68,6 +79,44 @@ public class PDFViewer extends JPanel {
             JPanel controlPanel = createControlPanel();
             add(controlPanel, BorderLayout.SOUTH); // Add control panel to the bottom
 
+            // Add mouse wheel listener for zooming
+            pdfPagesPanel.addMouseWheelListener(e -> {
+                if (e.isControlDown()) { // Check if Ctrl key is pressed
+                    double scaleFactor = 1.1; // Scale factor for zooming
+                    if (e.getWheelRotation() > 0) {
+                        scale /= scaleFactor; // Zoom out
+                    } else {
+                        scale *= scaleFactor; // Zoom in
+                    }
+                    updateVerticalPages(); // Update the pages with the new scale
+                }
+            });
+
+            // Add mouse listeners for panning
+            pdfPagesPanel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    dragStart = e.getPoint(); // Record the starting point for panning
+                }
+            });
+
+            pdfPagesPanel.addMouseMotionListener(new MouseAdapter() {
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    if (dragStart != null) {
+                        JViewport viewport = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, pdfPagesPanel);
+                        if (viewport != null) {
+                            int deltaX = dragStart.x - e.getX(); // Calculate horizontal panning distance
+                            int deltaY = dragStart.y - e.getY(); // Calculate vertical panning distance
+                            Rectangle view = viewport.getViewRect();
+                            view.x += deltaX; // Update the view position
+                            view.y += deltaY;
+                            pdfPagesPanel.scrollRectToVisible(view); // Scroll to the new position
+                        }
+                    }
+                }
+            });
+
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error opening PDF file: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -96,20 +145,12 @@ public class PDFViewer extends JPanel {
         controlPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); // Add padding
 
         // Button to toggle between vertical and horizontal modes
-        toggleModeButton = new JButton("Switch to Horizontal Mode");
-        toggleModeButton.setFont(new Font("Arial", Font.BOLD, 14)); // Set font
-        toggleModeButton.setBackground(new Color(90, 160, 255)); // Blue background
-        toggleModeButton.setForeground(Color.WHITE); // White text
-        toggleModeButton.setFocusPainted(false); // Remove focus border
+        toggleModeButton = createStyledButton.create("Switch to Horizontal Mode",new Color(90, 160, 255));
         toggleModeButton.addActionListener(e -> toggleViewMode()); // Add action listener
         controlPanel.add(toggleModeButton);
 
         // Button to return to the library view
-        JButton backButton = new JButton("Back to Library");
-        backButton.setFont(new Font("Arial", Font.BOLD, 14)); // Set font
-        backButton.setBackground(new Color(180, 34, 34)); // Red background
-        backButton.setForeground(Color.WHITE); // White text
-        backButton.setFocusPainted(false); // Remove focus border
+        JButton backButton = createStyledButton.create("Back to Library",new Color(180, 34, 34));
         backButton.addActionListener(e -> {
             cardLayout.show(cardPanel, "Dashboard"); // Switch back to the library view
             try {
@@ -123,20 +164,12 @@ public class PDFViewer extends JPanel {
         controlPanel.add(backButton);
 
         // Navigation buttons for horizontal mode
-        nextButton = new JButton("Next");
-        nextButton.setFont(new Font("Arial", Font.BOLD, 14)); // Set font
-        nextButton.setBackground(new Color(90, 160, 255)); // Blue background
-        nextButton.setForeground(Color.WHITE); // White text
-        nextButton.setFocusPainted(false); // Remove focus border
+        nextButton = createStyledButton.create("Next",new Color(90, 160, 255));
         nextButton.addActionListener(e -> navigateNext()); // Add action listener
         nextButton.setVisible(false); // Initially hidden
         controlPanel.add(nextButton);
 
-        previousButton = new JButton("Previous");
-        previousButton.setFont(new Font("Arial", Font.BOLD, 14)); // Set font
-        previousButton.setBackground(new Color(90, 160, 255)); // Blue background
-        previousButton.setForeground(Color.WHITE); // White text
-        previousButton.setFocusPainted(false); // Remove focus border
+        previousButton = createStyledButton.create("Previous",new Color(90, 160, 255));
         previousButton.addActionListener(e -> navigatePrevious()); // Add action listener
         previousButton.setVisible(false); // Initially hidden
         controlPanel.add(previousButton);
@@ -213,14 +246,16 @@ public class PDFViewer extends JPanel {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 try {
-                    // Render the page to the panel
-                    renderer.renderPageToGraphics(pageIndex, (Graphics2D) g);
+                    // Render the page to the panel with the current scale
+                    BufferedImage image = renderer.renderImage(pageIndex, (float) scale);
+                    Graphics2D g2d = (Graphics2D) g;
+                    g2d.drawImage(image, 0, 0, this);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         };
-        pagePanel.setPreferredSize(new Dimension(600, 800)); // Set size for each page
+        pagePanel.setPreferredSize(new Dimension((int) (600 * scale), (int) (800 * scale))); // Set size for each page
         pagePanel.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1)); // Add a border
         return pagePanel;
     }

@@ -7,7 +7,6 @@ import java.util.List;
 public class CSVUtils {
 
 
-
     // Type arrayList string, and it belongs to the class mean no need to create
     // instance ot the class to use
     public static List<String[]> readCSV(String filePath){
@@ -47,9 +46,11 @@ public class CSVUtils {
             throw new RuntimeException(e);
         }
     }
-    public static void updateCSV(String filePath,List<String []> updatedData){
+    public static void updateCSV(String filePath,List<String []> updatedData,String Header){
         try(BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, false))){
             List<String []> data =readCSV(filePath);
+            bw.write(Header);
+            bw.newLine();
             for(String[] row:updatedData){
                 bw.write(String.join(",",row));
                 bw.newLine();
