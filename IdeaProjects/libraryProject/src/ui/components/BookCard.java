@@ -104,4 +104,8 @@ public class BookCard extends JPanel {
             actionButton.setBackground(Color.GRAY);
         }
     }
+    // Getter for the button text
+    public String getButtonText() {
+        return actionButton.getText();
+    }
 }

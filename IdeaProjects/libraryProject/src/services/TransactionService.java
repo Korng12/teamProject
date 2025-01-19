@@ -74,7 +74,23 @@ public class TransactionService {
             }
         }
     }
-
+    public String generateId() {
+        List<String[]> rows = CSVUtils.readCSV(TRANSACTION_CSV);
+        int maxId = 0;
+        for (String[] row : rows) {
+            if (row.length > ID_INDEX) {
+                try {
+                    int id = Integer.parseInt(row[ID_INDEX]); // Parse the ID as an integer
+                    if (id > maxId) {
+                        maxId = id; // Update the highest ID
+                    }
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid ID format in CSV: " + row[ID_INDEX]);
+                }
+            }
+        }
+        return String.valueOf(maxId + 1); // Generate the next ID
+    }
     /**
      * Borrow a book by creating a new transaction.
      *
@@ -223,7 +239,4 @@ public class TransactionService {
      *
      * @return A new unique ID.
      */
-    public String generateId() {
-        return "TXN-" + System.currentTimeMillis();
-    }
 }

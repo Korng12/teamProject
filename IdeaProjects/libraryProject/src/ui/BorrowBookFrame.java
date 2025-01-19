@@ -1,5 +1,7 @@
 package ui;
 
+import utils.BorrowBookUtil;
+import utils.ImageLoader;
 import utils.createStyledButton;
 import controllers.BookController;
 import controllers.MenuController;
@@ -15,6 +17,7 @@ import ui.components.SearchBar;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +29,7 @@ public class BorrowBookFrame extends JPanel implements TransactionListener {
     private final TransactionController transactionController;
     private final CardLayout cardLayout;
     private final JPanel cardPanel;
+    private final MenuController menuController;
     private final Map<Book, BookCard> bookCardMap = new HashMap<>(); // Track BookCard instances
 
     public BorrowBookFrame(User user, CardLayout cardLayout, JPanel cardPanel, BookController bookController, TransactionController transactionController) {
@@ -33,28 +37,30 @@ public class BorrowBookFrame extends JPanel implements TransactionListener {
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
         this.bookController = bookController;
+        this.menuController = new MenuController(this.user, cardLayout, cardPanel);
         this.transactionController = transactionController;
 
         setLayout(new BorderLayout());
+        setBackground(new Color(240, 240, 240)); // Light gray background
         add(new Header("Imagine Library", user.getName(), this::handleLogout), BorderLayout.NORTH);
 
         JPanel mainContent = new JPanel(new BorderLayout());
+        mainContent.setBackground(new Color(240, 240, 240));
         String[] menuItems = {"Home", "View profile", "Borrow Book", "Return Book", "Borrowed books", "Back to previous", "New Arrivals"};
-        mainContent.add(new Menu(menuItems, new MenuController(user, cardLayout, cardPanel)::handleMenuButtonClick), BorderLayout.WEST);
+        mainContent.add(new Menu(menuItems, menuController::handleMenuButtonClick), BorderLayout.WEST);
         mainContent.add(createMainContent(), BorderLayout.CENTER);
         add(mainContent, BorderLayout.CENTER);
     }
 
     private JPanel createMainContent() {
-        JPanel mainContent = new JPanel();
-        mainContent.setLayout(new BorderLayout());
-        mainContent.setBackground(Color.WHITE);
+        JPanel mainContent = new JPanel(new BorderLayout());
+        mainContent.setBackground(new Color(240, 240, 240));
         mainContent.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Panel to hold the search bar and book list
         JPanel bookContentPanel = new JPanel();
         bookContentPanel.setLayout(new BoxLayout(bookContentPanel, BoxLayout.Y_AXIS));
-        bookContentPanel.setBackground(Color.WHITE);
+        bookContentPanel.setBackground(new Color(240, 240, 240));
 
         // Fetch all books and group them by genre
         Map<String, List<Book>> booksByGenre = groupAvailableBooksByGenre(bookController.getAllBooks());
@@ -108,16 +114,33 @@ public class BorrowBookFrame extends JPanel implements TransactionListener {
 
     private JPanel createGenreSection(String genre, List<Book> books) {
         JPanel genrePanel = new JPanel(new BorderLayout());
-        genrePanel.setBackground(Color.WHITE);
+        genrePanel.setBackground(new Color(240, 240, 240));
+        genrePanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+
+        // Create a panel for the genre label and "View All" button
+        JPanel genreHeaderPanel = new JPanel(new BorderLayout());
+        genreHeaderPanel.setBackground(new Color(240, 240, 240));
 
         JLabel genreLabel = new JLabel(genre);
         genreLabel.setFont(new Font("Arial", Font.BOLD, 18));
         genreLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        genrePanel.add(genreLabel, BorderLayout.NORTH);
+        genreHeaderPanel.add(genreLabel, BorderLayout.WEST);
+
+        // Create and add the "View All" button
+        JButton viewAllButton = createStyledButton.create("View All", new Color(90, 160, 255));
+        viewAllButton.addActionListener(_ -> {
+            // Navigate to the AllBooks frame with the selected genre and books
+            AllBooks allBooksFrame = new AllBooks(genre, books, cardLayout, cardPanel, user, menuController, bookController);
+            cardPanel.add(allBooksFrame, "AllBooks");
+            cardLayout.show(cardPanel, "AllBooks");
+        });
+        genreHeaderPanel.add(viewAllButton, BorderLayout.EAST);
+
+        genrePanel.add(genreHeaderPanel, BorderLayout.NORTH);
 
         JPanel bookListPanel = new JPanel();
         bookListPanel.setLayout(new BoxLayout(bookListPanel, BoxLayout.X_AXIS));
-        bookListPanel.setBackground(Color.WHITE);
+        bookListPanel.setBackground(new Color(240, 240, 240));
 
         int booksPerPage = 6;
         int totalPages = (int) Math.ceil((double) books.size() / booksPerPage);
@@ -140,7 +163,7 @@ public class BorrowBookFrame extends JPanel implements TransactionListener {
         updateBooks.run();
 
         JPanel paginationPanel = new JPanel();
-        paginationPanel.setBackground(Color.WHITE);
+        paginationPanel.setBackground(new Color(240, 240, 240));
         JButton prevButton = createStyledButton.create("Prev", new Color(90, 160, 255));
         JButton nextButton = createStyledButton.create("Next", new Color(90, 160, 255));
         paginationPanel.add(prevButton);
@@ -178,106 +201,16 @@ public class BorrowBookFrame extends JPanel implements TransactionListener {
     }
 
     private void borrowBook(Book book) {
-        // Create a custom dialog panel
-        JDialog dialog = new JDialog();
-        dialog.setUndecorated(true);
-        dialog.setSize(400, 200);
-        dialog.setLocationRelativeTo(this);
-        dialog.setModal(true);
-
-        // Main panel with custom styling
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.setBackground(Color.WHITE);
-        mainPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(90, 160, 255), 2),
-                BorderFactory.createEmptyBorder(20, 20, 20, 20)
-        ));
-
-        // Title
-        JLabel titleLabel = new JLabel("Confirm Borrowing");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // Message
-        JLabel messageLabel = new JLabel("<html><center>Are you sure you want to borrow<br>'" + book.getTitle() + "'?</center></html>");
-        messageLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        messageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // Buttons panel
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(Color.WHITE);
-
-        // Confirm button
-        JButton confirmButton = createStyledButton.create("Confirm", new Color(90, 160, 255));
-        confirmButton.addActionListener(_ -> {
-            dialog.dispose();
-            boolean success = transactionController.borrowBook(book, user, this);
-            if (!success) {
-                showErrorDialog("Failed to borrow the book. Please try again.");
-            }
-        });
-
-        // Cancel button
-        JButton cancelButton = createStyledButton.create("Cancel", Color.GRAY);
-        cancelButton.addActionListener(_ -> dialog.dispose());
-
-        // Add components to the panel
-        mainPanel.add(Box.createVerticalStrut(10));
-        mainPanel.add(titleLabel);
-        mainPanel.add(Box.createVerticalStrut(20));
-        mainPanel.add(messageLabel);
-        mainPanel.add(Box.createVerticalStrut(20));
-        buttonPanel.add(confirmButton);
-        buttonPanel.add(Box.createHorizontalStrut(10));
-        buttonPanel.add(cancelButton);
-        mainPanel.add(buttonPanel);
-
-        // Add panel to dialog
-        dialog.add(mainPanel);
-        dialog.setVisible(true);
-    }
-
-    private void showErrorDialog(String message) {
-        JDialog errorDialog = new JDialog();
-        errorDialog.setUndecorated(true);
-        errorDialog.setSize(350, 150);
-        errorDialog.setLocationRelativeTo(this);
-        errorDialog.setModal(true);
-
-        JPanel errorPanel = new JPanel();
-        errorPanel.setLayout(new BoxLayout(errorPanel, BoxLayout.Y_AXIS));
-        errorPanel.setBackground(Color.WHITE);
-        errorPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.RED, 2),
-                BorderFactory.createEmptyBorder(20, 20, 20, 20)
-        ));
-
-        JLabel errorTitle = new JLabel("Error");
-        errorTitle.setFont(new Font("Arial", Font.BOLD, 18));
-        errorTitle.setForeground(Color.RED);
-        errorTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JLabel errorMessage = new JLabel("<html><center>" + message + "</center></html>");
-        errorMessage.setFont(new Font("Arial", Font.PLAIN, 14));
-        errorMessage.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JButton okButton = createStyledButton.create("OK", Color.RED);
-        okButton.addActionListener(_ -> errorDialog.dispose());
-        okButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        errorPanel.add(errorTitle);
-        errorPanel.add(Box.createVerticalStrut(15));
-        errorPanel.add(errorMessage);
-        errorPanel.add(Box.createVerticalStrut(15));
-        errorPanel.add(okButton);
-
-        errorDialog.add(errorPanel);
-        errorDialog.setVisible(true);
+        BorrowBookUtil.borrowBook(book, user, transactionController, this);
     }
 
     private void showBookDetails(Book book) {
-        BookDetails detailsScreen = new BookDetails(book, cardLayout, cardPanel, user, new MenuController(user, cardLayout, cardPanel));
+        // Fetch the button text from the BookCard
+        BookCard bookCard = bookCardMap.get(book);
+        String buttonText = bookCard != null ? bookCard.getButtonText() : "Borrow"; // Default to "Read" if BookCard is not found
+
+        // Pass the button text to BookDetails
+        BookDetails detailsScreen = new BookDetails(book, buttonText, cardLayout, cardPanel, user, new MenuController(user, cardLayout, cardPanel), bookController);
         cardPanel.add(detailsScreen, "BookDetails");
         cardLayout.show(cardPanel, "BookDetails");
     }

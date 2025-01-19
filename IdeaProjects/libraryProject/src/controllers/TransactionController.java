@@ -117,4 +117,7 @@ public class TransactionController {
     public List<Transaction> getAllActiveTransaction(){
         return transactionService.getActiveTransactions();
     }
+    public String GenerateId(){
+        return transactionService.generateId();
+    }
 }

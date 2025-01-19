@@ -27,6 +27,7 @@ public class UserDashboard extends JPanel {
     private final CardLayout cardLayout; // Layout manager for switching panels
     private final JPanel cardPanel; // Main panel that holds all other panels
     private final MenuController menuController; // Controller for handling menu actions
+    private final Map<Book, BookCard> bookCardMap = new HashMap<>(); // Track BookCard instances
 
     // Constructor
     public UserDashboard(User user, CardLayout cardLayout, JPanel cardPanel, BookController bookController) {
@@ -56,113 +57,7 @@ public class UserDashboard extends JPanel {
         add(mainContent, BorderLayout.CENTER);
     }
 
-//<<<<<<< HEAD
-    // Method to create the header panel
-    private JPanel createHeader() {
-        JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(new Color(153, 153, 255)); // Purple background
-        header.setPreferredSize(new Dimension(getWidth(), 80)); // Set height of the header
-
-        // Logo and library name section
-        JPanel logoSection = new JPanel();
-        logoSection.setOpaque(false); // Transparent background
-        logoSection.setLayout(new BoxLayout(logoSection, BoxLayout.X_AXIS)); // Horizontal layout
-        logoSection.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Padding
-
-        // Load and resize the logo image
-        ImageIcon logoIcon = loadImageIcon("/images/thumbnails/library.jpg", 40, 40);
-        JLabel logo = new JLabel(logoIcon);
-        logoSection.add(logo);
-
-        // Add spacing between logo and library name
-        logoSection.add(Box.createRigidArea(new Dimension(10, 0)));
-
-        // Add the library name
-        JLabel libraryName = new JLabel("Imagine Library");
-        libraryName.setFont(new Font("Arial", Font.BOLD, 20));
-        libraryName.setForeground(Color.WHITE); // White text color
-        logoSection.add(libraryName);
-
-        // User section with logout button
-        JPanel userSection = new JPanel();
-        userSection.setOpaque(false); // Transparent background
-        userSection.setLayout(new BoxLayout(userSection, BoxLayout.X_AXIS)); // Horizontal layout
-        userSection.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Padding
-
-        // Logout button
-        JButton logoutButton = createStyledButton.create("Log out", new Color(136, 30, 30)); // Red button
-        logoutButton.setFont(new Font("Arial", Font.PLAIN, 14));
-        logoutButton.setForeground(Color.WHITE);
-        logoutButton.setFocusPainted(false);
-
-        // Logout functionality
-        logoutButton.addActionListener(e -> {
-            cardLayout.show(cardPanel, "Login"); // Switch to login panel
-            JOptionPane.showMessageDialog(UserDashboard.this, "Logged out successfully!", "Logout", JOptionPane.INFORMATION_MESSAGE);
-        });
-        userSection.add(logoutButton);
-
-        // Welcome message in the center
-        JPanel welcomePanel = new JPanel(new GridBagLayout());
-        welcomePanel.setOpaque(false); // Transparent background
-
-        JLabel welcomeLabel = new JLabel("Welcome, " + user.getName());
-        welcomeLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        welcomeLabel.setForeground(Color.WHITE);
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.CENTER; // Center the label
-        welcomePanel.add(welcomeLabel, gbc);
-
-        // Add sections to the header
-        header.add(logoSection, BorderLayout.WEST); // Logo and library name on the left
-        header.add(welcomePanel, BorderLayout.CENTER); // Welcome message in the center
-        header.add(userSection, BorderLayout.EAST); // Logout button on the right
-
-        return header;
-    }
-
-    // Method to create the menu panel
-    private JPanel createMenu() {
-        JPanel menuPanel = new JPanel();
-        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS)); // Vertical layout
-        menuPanel.setBackground(new Color(204, 204, 255)); // Light purple background
-        menuPanel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10)); // Padding
-
-        // Menu items
-        String[] menuItems = {"Home", "View profile", "Borrow Book", "Return Book", "Borrowed books", "Back to previous", "New Arrivals"};
-        for (String item : menuItems) {
-            JButton button = createStyledButton.create(item, new Color(153, 153, 255)); // Purple button
-            button.setAlignmentX(Component.LEFT_ALIGNMENT); // Align buttons to the left
-            button.setFont(new Font("Arial", Font.PLAIN, 14));
-            button.setForeground(Color.WHITE);
-            button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Padding
-            button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40)); // Fill width
-
-            // Add action listener to the button
-            button.addActionListener(e -> menuController.handleMenuButtonClick(item));
-
-            menuPanel.add(button);
-            menuPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Spacing between buttons
-        }
-
-        // Wrap the menu in a scroll pane
-        JScrollPane scrollPane = new JScrollPane(menuPanel);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder()); // Remove border
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Disable horizontal scroll
-
-        JPanel wrapperPanel = new JPanel(new BorderLayout());
-        wrapperPanel.add(scrollPane, BorderLayout.CENTER);
-        return wrapperPanel;
-    }
-
-    // Method to create the main content panel
-//=======
-//    // Method to create the main content panel (search bar and book list)
-//    // Method to create the main content panel (search bar and book list)
-//>>>>>>> 37b772dc60ef6abbc6ecbf4a20d37f3f0daf083b
+    // Method to create the main content panel (search bar and book list)
     private JPanel createMainContent() {
         JPanel mainContent = new JPanel();
         mainContent.setLayout(new BorderLayout());
@@ -223,17 +118,32 @@ public class UserDashboard extends JPanel {
         return booksByGenre;
     }
 
-
     // Method to create a genre section with books and pagination
     private JPanel createGenreSection(String genre, List<Book> books) {
         JPanel genrePanel = new JPanel(new BorderLayout());
         genrePanel.setBackground(Color.WHITE);
 
-        // Add the genre title to the top of the genre panel
+        // Create a panel for the genre title and the "View" button
+        JPanel titlePanel = new JPanel(new BorderLayout());
+        titlePanel.setBackground(Color.WHITE);
+
+        // Add the genre title to the left side of the title panel
         JLabel genreLabel = new JLabel(genre);
         genreLabel.setFont(new Font("Arial", Font.BOLD, 18)); // Set font and size
         genreLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); // Add padding
-        genrePanel.add(genreLabel, BorderLayout.NORTH);
+        titlePanel.add(genreLabel, BorderLayout.WEST);
+
+        // Add the "View" button to the right side of the title panel
+        JButton viewButton = createStyledButton.create("View All", new Color(90, 160, 255));
+        viewButton.addActionListener(e -> {
+            AllBooks allBooks = new AllBooks(genre, books, cardLayout, cardPanel, user, menuController, bookController);
+            cardPanel.add(allBooks, "AllBooks");
+            cardLayout.show(cardPanel, "AllBooks");
+        });
+        titlePanel.add(viewButton, BorderLayout.EAST);
+
+        // Add the title panel to the top of the genre panel
+        genrePanel.add(titlePanel, BorderLayout.NORTH);
 
         // Create a panel to hold the list of books
         JPanel bookListPanel = new JPanel();
@@ -260,6 +170,7 @@ public class UserDashboard extends JPanel {
                 );
 
                 bookListPanel.add(bookCard); // Add the book card to the panel
+                bookCardMap.put(book, bookCard); // Track the BookCard in the map
             }
             bookListPanel.revalidate(); // Refresh the panel
             bookListPanel.repaint(); // Repaint the panel
@@ -271,13 +182,13 @@ public class UserDashboard extends JPanel {
         // Create pagination controls (Prev, page numbers, Next)
         JPanel paginationPanel = new JPanel();
         paginationPanel.setBackground(Color.white);
-        JButton prevButton = createStyledButton.create("Prev",new Color(90, 160, 255));
-        JButton nextButton = createStyledButton.create("Next",new Color(90, 160, 255));
+        JButton prevButton = createStyledButton.create("Prev", new Color(90, 160, 255));
+        JButton nextButton = createStyledButton.create("Next", new Color(90, 160, 255));
         paginationPanel.add(prevButton);
 
         // Add page number buttons (e.g., 1, 2, 3, etc.)
         for (int i = 0; i < totalPages; i++) {
-            JButton pageButton = createStyledButton.create(String.valueOf(i + 1),new Color(90, 160, 255)); // Page numbers start from 1
+            JButton pageButton = createStyledButton.create(String.valueOf(i + 1), new Color(90, 160, 255)); // Page numbers start from 1
             int pageIndex = i; // Store the page index for the action listener
             pageButton.addActionListener(e -> {
                 currentPage[0] = pageIndex; // Update the current page
@@ -312,10 +223,14 @@ public class UserDashboard extends JPanel {
 
     // Method to show book details
     private void showBookDetails(Book book) {
-        // Create the book details screen
-        BookDetails detailsScreen = new BookDetails(book, cardLayout, cardPanel,user,menuController);
-        cardPanel.add(detailsScreen, "BookDetails"); // Add the details screen to the card panel
-        cardLayout.show(cardPanel, "BookDetails"); // Switch to the book details screen
+        // Fetch the button text from the BookCard
+        BookCard bookCard = bookCardMap.get(book);
+        String buttonText = bookCard != null ? bookCard.getButtonText() : "Read"; // Default to "Read" if BookCard is not found
+
+        // Pass the button text to BookDetails
+        BookDetails detailsScreen = new BookDetails(book, buttonText, cardLayout, cardPanel, user, menuController,bookController);
+        cardPanel.add(detailsScreen, "BookDetails");
+        cardLayout.show(cardPanel, "BookDetails");
     }
 
     // Method to handle logout

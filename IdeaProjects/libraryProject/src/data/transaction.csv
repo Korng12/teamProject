@@ -6,3 +6,6 @@ id,userEmail,bookId,borrowDate,dueDate,returnDate,isBorrow
 5,utaike@gmail.com,1,2025-01-17,2025-01-31,2025-01-17,false
 6,utaike@gmail.com,4,2025-01-17,2025-01-31,2025-01-17,false
 7,sengkea@gmail.com,3,2025-01-17,2025-01-31,2025-01-17,false
+8,sengkea@gmail.com,1,2025-01-17,2025-01-31,2025-01-17,false
+9,sengkea@gmail.com,1,2025-01-17,2025-01-31,2025-01-17,false
+10,sengkea@gmail.com,1,2025-01-19,2025-02-02,,true
