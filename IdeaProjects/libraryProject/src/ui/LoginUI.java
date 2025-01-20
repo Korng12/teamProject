@@ -305,6 +305,7 @@ public class LoginUI extends JFrame {
 
         });
 
+
         registerPanel.add(titleLabel);
         registerPanel.add(Box.createVerticalStrut(10));
         registerPanel.add(welcome);
@@ -334,6 +335,12 @@ public class LoginUI extends JFrame {
 //        return email.matches(emailRegex);
 //    }
     public static void main(String[] args) {
-        new LoginUI();
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new LoginUI();
+            }
+        });
     }
 }
