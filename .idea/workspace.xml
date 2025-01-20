@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="dde3490a-1c2d-4a0c-b6ec-371cce6920bf" name="Changes" comment="fixup! userDashbaord and add new file book,bookcontroller,bookservice make some change in UserService,userController">
+      <change beforePath="$PROJECT_DIR$/IdeaProjects/libraryProject/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/IdeaProjects/libraryProject/libraryProject.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/IdeaProjects/libraryProject/src/ui/LoginUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/IdeaProjects/libraryProject/src/ui/LoginUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teamProject.iml" beforeDir="false" afterPath="$PROJECT_DIR$/teamProject.iml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <excluded-from-favorite>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="main" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </excluded-from-favorite>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Keaseng-hak&quot;
+  }
+}</component>
+  <component name="GithubDefaultAccount">
+    <option name="defaultAccountId" value="c078c6a2-fe98-4d9e-b59e-1085b7d99f1d" />
+  </component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Korng12/teamProject.git&quot;,
+    &quot;accountId&quot;: &quot;c078c6a2-fe98-4d9e-b59e-1085b7d99f1d&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2rCllMNyR5muAxsFjqBEf4bLq1x" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.BookService.executor": "Run",
+    "Application.LoginUI.executor": "Run",
+    "Application.Main.executor": "Run",
+    "Application.UserDashboard.executor": "Run",
+    "Application.UserService.executor": "Run",
+    "Application.userDashboard.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/OneDrive - itc.edu.kh/testing",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "file.status.colors"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\OneDrive - itc.edu.kh\teamProject\IdeaProjects" />
+      <recent name="D:\OneDrive - itc.edu.kh\teamProject" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\OneDrive - itc.edu.kh\teamProject\IdeaProjects\libraryProject\src\data\PDF" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration>C:\Users\Dell\AppData\Roaming\Subversion</configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="dde3490a-1c2d-4a0c-b6ec-371cce6920bf" name="Changes" comment="" />
+      <created>1736071089605</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1736071089605</updated>
+    </task>
+    <task id="LOCAL-00001" summary="userDashbaord &#10;and add new file&#10;book,bookcontroller,bookservice&#10;make some change in UserService,userController">
+      <option name="closed" value="true" />
+      <created>1736420816932</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1736420816932</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.csv" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="false" />
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="update validationUtils" />
+    <MESSAGE value="fixup! userDashbaord and add new file book,bookcontroller,bookservice make some change in UserService,userController" />
+    <MESSAGE value="userDashbaord &#10;and add new file&#10;book,bookcontroller,bookservice&#10;make some change in UserService,userController" />
+    <option name="LAST_COMMIT_MESSAGE" value="userDashbaord &#10;and add new file&#10;book,bookcontroller,bookservice&#10;make some change in UserService,userController" />
+  </component>
+</project>
