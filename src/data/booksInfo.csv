@@ -1,5 +1,0 @@
-id,isbn,title,genre,author,imgPath,link,isAvailable,description
-1,978-3-16-148410-0,Atomic Habits,Self-Help,James Clear,images/books/atomicHabits.jpg,IdeaProjects/libraryProject/src/data/PDF/Atomic habits.pdf,false,"A practical guide to building good habits and breaking bad ones
-2,978-1-23-456789-0,Criminal Psychology,Psychology,John Doe,images/books/img.png,IdeaProjects/libraryProject/src/data/PDF/Criminal-Psychology.pdf,true,"An exploration of the psychological factors behind criminal behavior
-3,978-0-98-765432-1,Group Psychology and the Analysis of the Ego,Psychology,Sigmund Freud,images/books/img_1.png,IdeaProjects/libraryProject/src/data/PDF/Group-Psychology-and-The-Analysis-of-The-Ego.pdf,true,"A study of the dynamics of groups and the influence of the unconscious on collective behavior."
-4,978-0-11-223344-5,Love,Romance,Toni Morrison,images/books/img_2.png,IdeaProjects/libraryProject/src/data/PDF/Love.pdf,true,"An evocative exploration of the complexities of human relationships and emotions."
