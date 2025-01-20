@@ -3,7 +3,9 @@ package ui;
 import controllers.BookController;
 import controllers.MenuController;
 import controllers.TransactionController;
+import Listener.TransactionListener;
 import models.Book;
+import models.Transaction;
 import models.User;
 import ui.components.*;
 import ui.components.Menu;
@@ -13,30 +15,31 @@ import utils.createStyledButton;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.List;
 
-public class BookDetails extends JPanel {
+public class BookDetails extends JPanel implements TransactionListener {
     private final Book book;
     private final CardLayout cardLayout;
     private final JPanel cardPanel;
     private final User user;
     private final MenuController menuController;
     private final BookController bookController;
-    private final String buttonText;
-    private final TransactionController transactionController;
-    private JPanel mainContent;
+    private final String frameType; // Add frameType
+    private JButton actionButton;
     private JPanel recommendationsPanel;
+    private final TransactionController transactionController;
 
-    public BookDetails(Book book, String buttonText, CardLayout cardLayout, JPanel cardPanel, User user, MenuController menuController, BookController bookController) {
+    public BookDetails(Book book, CardLayout cardLayout, JPanel cardPanel, User user, MenuController menuController, BookController bookController, String frameType) {
         this.book = book;
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
         this.user = user;
         this.menuController = menuController;
         this.bookController = bookController;
-        this.buttonText = buttonText;
+        this.frameType = frameType; // Initialize frameType
         this.transactionController = new TransactionController();
-        this.mainContent = new JPanel(new BorderLayout());
+
         initializeUI();
     }
 
@@ -44,6 +47,7 @@ public class BookDetails extends JPanel {
         setLayout(new BorderLayout());
         add(new Header("Imagine Library", user.getName(), this::handleLogout), BorderLayout.NORTH);
 
+        JPanel mainContent = new JPanel(new BorderLayout());
         String[] menuItems = {"Home", "View profile", "Borrow Book", "Return Book", "Borrowed books", "Back to previous", "New Arrivals"};
         mainContent.add(new Menu(menuItems, menuController::handleMenuButtonClick), BorderLayout.WEST);
 
@@ -61,7 +65,8 @@ public class BookDetails extends JPanel {
         mainPanel.add(Box.createVerticalStrut(20));
 
         // Add the action button (e.g., Borrow or Read)
-        mainPanel.add(createActionButton());
+        actionButton = createActionButton();
+        mainPanel.add(actionButton);
         mainPanel.add(Box.createVerticalStrut(20));
 
         // Add the recommendations panel (initially populated with books of the same genre)
@@ -72,7 +77,7 @@ public class BookDetails extends JPanel {
     }
 
     private JPanel createBookDetailsPanel() {
-        JPanel bookDetailsPanel = new JPanel(new BorderLayout(20, 20)); // Add horizontal and vertical gaps
+        JPanel bookDetailsPanel = new JPanel(new BorderLayout(20, 20));
         bookDetailsPanel.add(createBookCover(), BorderLayout.WEST);
         bookDetailsPanel.add(createBookInfoPanel(), BorderLayout.CENTER);
         return bookDetailsPanel;
@@ -130,29 +135,44 @@ public class BookDetails extends JPanel {
     }
 
     private JButton createActionButton() {
-        String buttonLabel = book.isAvailable() ? buttonText : "Unavailable";
-        JButton button = createStyledButton.create(buttonLabel, book.isAvailable() ? new Color(0, 100, 225) : Color.GRAY);
+        // Determine button text based on frameType and book availability
+        String buttonText = determineButtonText(book);
+        boolean isButtonEnabled = determineButtonEnabled(book);
+
+        JButton button = createStyledButton.create(buttonText, isButtonEnabled ? new Color(0, 100, 225) : Color.GRAY);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setFont(new Font("Arial", Font.PLAIN, 14));
-        button.setEnabled(book.isAvailable());
+        button.setEnabled(isButtonEnabled);
         button.addActionListener(e -> handleButtonAction());
-
-        // Add padding and margin to the button
-        button.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.GRAY, 1),
-                BorderFactory.createEmptyBorder(10, 20, 10, 20)
-        ));
 
         return button;
     }
 
+    private String determineButtonText(Book book) {
+        if ("BorrowBookFrame".equals(frameType)) {
+            return "Borrow"; // Always show "Borrow" in the BorrowBookFrame
+        } else if ("UserDashboard".equals(frameType)) {
+            return "Read"; // Show "Borrow" or "Read" in the UserDashboard
+        }
+        return ""; // Default text
+    }
+
+    private boolean determineButtonEnabled(Book book) {
+        if ("BorrowBookFrame".equals(frameType)) {
+            return book.isAvailable(); // Enable button only if the book is available in the BorrowBookFrame
+        } else if ("UserDashboard".equals(frameType)) {
+            return true; // Always enable the button in the UserDashboard
+        }
+        return false; // Default behavior
+    }
+
     private void handleButtonAction() {
-        if (!book.isAvailable()) {
+        if (!book.isAvailable() && "Borrow".equals(actionButton.getText())) {
             JOptionPane.showMessageDialog(this, "This book is currently unavailable.", "Unavailable", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        switch (buttonText) {
+        switch (actionButton.getText()) {
             case "Borrow":
                 borrowBook(book);
                 break;
@@ -166,7 +186,7 @@ public class BookDetails extends JPanel {
     }
 
     private void borrowBook(Book book) {
-        BorrowBookUtil.borrowBook(book, user, transactionController, this);
+        BorrowBookUtil.borrowBook(book, user, transactionController, this, this);
     }
 
     private void openPDF(String pdfPath) {
@@ -196,8 +216,15 @@ public class BookDetails extends JPanel {
 
         JPanel bookCardsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         for (Book recommendedBook : recommendedBooks) {
-            if (!recommendedBook.getTitle().equals(book.getTitle())) {
-                BookCard bookCard = new BookCard(recommendedBook, () -> handleButtonAction(), () -> showBookDetails(recommendedBook));
+            if (!recommendedBook.getTitle().equals(book.getTitle()) && recommendedBook.isAvailable()) {
+                // Create a new BookCard for the recommended book
+                BookCard bookCard = new BookCard(
+                        recommendedBook,
+                        () -> borrowBook(recommendedBook), // Action for the button
+                        () -> showBookDetails(recommendedBook), // Action for viewing details
+                        frameType // Pass the frame type to match the button behavior
+                );
+
                 bookCardsPanel.add(bookCard);
             }
         }
@@ -207,7 +234,7 @@ public class BookDetails extends JPanel {
     }
 
     private void showBookDetails(Book book) {
-        BookDetails detailsScreen = new BookDetails(book, buttonText, cardLayout, cardPanel, user, menuController, bookController);
+        BookDetails detailsScreen = new BookDetails(book, cardLayout, cardPanel, user, menuController, bookController, frameType);
         cardPanel.add(detailsScreen, "BookDetails");
         cardLayout.show(cardPanel, "BookDetails");
     }
@@ -215,5 +242,52 @@ public class BookDetails extends JPanel {
     private void handleLogout() {
         cardLayout.show(cardPanel, "Login");
         JOptionPane.showMessageDialog(this, "Logged out successfully!", "Logout", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    @Override
+    public void onBorrowSuccess(Transaction transaction) {
+        // Show success message
+        JOptionPane.showMessageDialog(this, "Book borrowed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+        // Update the book's availability
+        book.setAvailable(false);
+
+        // Refresh the UI
+        refreshUI();
+    }
+
+    @Override
+    public void onBorrowFailure(String errorMessage) {
+        JOptionPane.showMessageDialog(this, errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    @Override
+    public void onReturnSuccess(Transaction transaction) {
+        // Not used in BookDetails
+    }
+
+    @Override
+    public void onReturnFailure(String errorMessage) {
+        // Not used in BookDetails
+    }
+
+    private void refreshUI() {
+        // Update the action button
+        actionButton.setText("Unavailable");
+        actionButton.setBackground(Color.GRAY);
+        actionButton.setEnabled(false);
+
+        // Refresh the recommendations panel
+        recommendationsPanel.removeAll();
+        List<Book> updatedRecommendations = bookController.getBooksByGenre(book.getGenre());
+        for (Book recommendedBook : updatedRecommendations) {
+            if (!recommendedBook.getTitle().equals(book.getTitle()) && recommendedBook.isAvailable()) {
+                BookCard bookCard = new BookCard(recommendedBook, () -> borrowBook(recommendedBook), () -> showBookDetails(recommendedBook), frameType);
+                recommendationsPanel.add(bookCard);
+            }
+        }
+
+        recommendationsPanel.revalidate();
+        recommendationsPanel.repaint();
     }
 }

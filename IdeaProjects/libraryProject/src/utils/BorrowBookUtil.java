@@ -3,7 +3,6 @@ package utils;
 import Listener.TransactionListener;
 import controllers.TransactionController;
 import models.Book;
-import models.Transaction;
 import models.User;
 
 import javax.swing.*;
@@ -12,7 +11,7 @@ import java.time.LocalDate;
 
 public class BorrowBookUtil {
 
-    public static void borrowBook(Book book, User user, TransactionController transactionController, Component parentComponent) {
+    public static void borrowBook(Book book, User user, TransactionController transactionController, TransactionListener listener, Component parentComponent) {
         // Create a custom dialog panel
         JDialog dialog = new JDialog();
         dialog.setTitle("Borrow Confirmation");
@@ -79,39 +78,12 @@ public class BorrowBookUtil {
         confirmButton.setPreferredSize(new Dimension(150, 50));
         confirmButton.addActionListener(_ -> {
             // Save the transaction only when the user confirms
-            boolean success = transactionController.borrowBook(book, user, new TransactionListener() {
-                @Override
-                public void onBorrowSuccess(Transaction transaction) {
-                    // Update transaction details in the dialog
-                    transactionIdLabel.setText("Transaction ID: " + transaction.getId());
-                    borrowDateLabel.setText("Borrow Date: " + transaction.getBorrowDate());
-                    dueDateLabel.setText("Due Date: " + transaction.getDueDate());
-
-                    // Show success message
-                    JOptionPane.showMessageDialog(dialog, "Book borrowed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-
-                    // Close the dialog after a short delay
-                    new Timer(2000, e -> dialog.dispose()).start();
-                }
-
-                @Override
-                public void onBorrowFailure(String errorMessage) {
-                    showErrorDialog(errorMessage, parentComponent);
-                }
-
-                @Override
-                public void onReturnSuccess(Transaction transaction) {
-                    // Not used here
-                }
-
-                @Override
-                public void onReturnFailure(String errorMessage) {
-                    // Not used here
-                }
-            });
+            boolean success = transactionController.borrowBook(book, user, listener);
 
             if (!success) {
                 showErrorDialog("Failed to borrow the book. Please try again.", parentComponent);
+            } else {
+                dialog.dispose(); // Close the dialog after successful borrow
             }
         });
 

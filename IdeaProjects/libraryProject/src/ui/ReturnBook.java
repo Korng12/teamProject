@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.util.List;
+import java.util.ArrayList;
 import Listener.TransactionListener;
 import ui.components.Menu;
 import utils.createStyledButton;
@@ -105,7 +106,7 @@ public class ReturnBook extends JPanel implements TransactionListener {
      */
     private JTable createTransactionTable() {
         // Define column names for the table
-        String[] columnNames = {"Select", "NO.", "Book's id", "Book's Title", "Issued date", "Due date", "Status"};
+        String[] columnNames = {"Select", "Transaction's id", "Book's id", "Book's Title", "Issued date", "Due date", "Status"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -180,6 +181,7 @@ public class ReturnBook extends JPanel implements TransactionListener {
     private void handleReturnButtonClick() {
         DefaultTableModel model = (DefaultTableModel) transactionTable.getModel();
         boolean atLeastOneSelected = false;
+        List<Book> selectedBooks = new ArrayList<>(); // List to store selected books
 
         // Iterate through the table rows to find selected books
         for (int row = 0; row < model.getRowCount(); row++) {
@@ -192,24 +194,26 @@ public class ReturnBook extends JPanel implements TransactionListener {
                     JOptionPane.showMessageDialog(this, "Book not found for ID: " + bookId, "Error", JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
-
-                // Show confirmation dialog before returning the book
-                showReturnConfirmationDialog(book);
+                selectedBooks.add(book); // Add the selected book to the list
             }
         }
 
         // Show an error if no books are selected
         if (!atLeastOneSelected) {
             JOptionPane.showMessageDialog(this, "Please select at least one book to return.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        // Show confirmation dialog for returning all selected books (ONCE)
+        showReturnConfirmationDialog(selectedBooks);
     }
 
     /**
-     * Shows a confirmation dialog for returning a book.
+     * Shows a confirmation dialog for returning multiple books.
      *
-     * @param book The book to be returned.
+     * @param selectedBooks The list of books to be returned.
      */
-    private void showReturnConfirmationDialog(Book book) {
+    private void showReturnConfirmationDialog(List<Book> selectedBooks) {
         JDialog dialog = new JDialog();
         dialog.setUndecorated(true); // Remove window decorations
         dialog.setSize(400, 200); // Set dialog size
@@ -230,8 +234,8 @@ public class ReturnBook extends JPanel implements TransactionListener {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Add a message label with the book title
-        JLabel messageLabel = new JLabel("<html><center>Are you sure you want to return<br>'" + book.getTitle() + "'?</center></html>");
+        // Add a message label with the number of selected books
+        JLabel messageLabel = new JLabel("<html><center>Are you sure you want to return<br>" + selectedBooks.size() + " selected books?</center></html>");
         messageLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         messageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -243,12 +247,28 @@ public class ReturnBook extends JPanel implements TransactionListener {
         JButton confirmButton = createStyledButton.create("Confirm", new Color(90, 160, 255));
         confirmButton.addActionListener(_ -> {
             dialog.dispose(); // Close the dialog
-            boolean success = transactionController.returnBook(book, user, this); // Attempt to return the book
-            if (success) {
-                refreshTable(); // Refresh the table if the return is successful
-            } else {
-                showErrorDialog("Failed to return the book. Please try again."); // Show an error message if the return fails
+            boolean allSuccessful = true;
+            int successfulReturns = 0;
+            int failedReturns = 0;
+
+            // Attempt to return all selected books in a batch
+            for (Book book : selectedBooks) {
+                boolean success = transactionController.returnBook(book, user, this);
+                if (success) {
+                    successfulReturns++;
+                } else {
+                    failedReturns++;
+                    allSuccessful = false;
+                }
             }
+
+            // Show a summary of the return operation
+            if (allSuccessful) {
+                JOptionPane.showMessageDialog(this, "All selected books returned successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                showReturnSummaryDialog(selectedBooks.size(), successfulReturns, failedReturns);
+            }
+            refreshTable(); // Refresh the table to reflect the updated status
         });
 
         // Create and style the "Cancel" button
@@ -273,6 +293,23 @@ public class ReturnBook extends JPanel implements TransactionListener {
     }
 
     /**
+     * Shows a summary dialog with the results of the return operation.
+     *
+     * @param totalBooks        The total number of books selected.
+     * @param successfulReturns The number of books successfully returned.
+     * @param failedReturns     The number of books that failed to return.
+     */
+    private void showReturnSummaryDialog(int totalBooks, int successfulReturns, int failedReturns) {
+        String message = "<html><center>"
+                + "Total books selected: " + totalBooks + "<br>"
+                + "Books returned successfully: " + successfulReturns + "<br>"
+                + "Books failed to return: " + failedReturns + "<br>"
+                + "</center></html>";
+
+        JOptionPane.showMessageDialog(this, message, "Return Summary", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /**
      * Shows an error dialog with the given message.
      *
      * @param message The error message to display.
@@ -288,8 +325,7 @@ public class ReturnBook extends JPanel implements TransactionListener {
      */
     @Override
     public void onReturnSuccess(Transaction transaction) {
-        JOptionPane.showMessageDialog(this, "Book returned successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-        refreshTable(); // Refresh the table to reflect the updated status
+        // This method is called by the TransactionController when a book is successfully returned
     }
 
     /**
@@ -299,7 +335,7 @@ public class ReturnBook extends JPanel implements TransactionListener {
      */
     @Override
     public void onReturnFailure(String errorMessage) {
-        JOptionPane.showMessageDialog(this, errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
+        showErrorDialog(errorMessage); // Show the error message
     }
 
     /**

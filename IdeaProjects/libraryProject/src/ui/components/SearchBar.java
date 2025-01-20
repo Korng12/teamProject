@@ -11,44 +11,34 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * A search bar component that allows users to search and filter books.
- * Features:
- * - Text search through titles and descriptions
- * - Category and author filters
- * - Search activation via icon click or enter key
+ * A responsive search bar component that allows users to search and filter books.
  */
 public class SearchBar extends JPanel {
-    // UI Components
     private final JTextField searchField;
     private final JComboBox<String> categoryFilter;
     private final JComboBox<String> authorFilter;
-
-    // Business Logic
     private final BookController bookController;
-    private Consumer<List<Book>> onSearchResults;
+    private final Consumer<List<Book>> onSearchResults;
 
-    /**
-     * Creates a new SearchBar component
-     * @param bookController Controller for book operations
-     * @param onSearchResults Callback for when search results change
-     */
     public SearchBar(BookController bookController, Consumer<List<Book>> onSearchResults) {
         this.bookController = bookController;
         this.onSearchResults = onSearchResults;
 
         // Initialize UI components
-        searchField = createSearchField();
-        categoryFilter = createFilterDropdown("All Categories");
-        authorFilter = createFilterDropdown("All Authors");
+        searchField = createTextField();
+        categoryFilter = createDropdown("All Categories");
+        authorFilter = createDropdown("All Authors");
+
+        // Set up layout and functionality
         setupLayout();
-        loadFilterData();
-        setupSearchTriggers();
+        loadFilters();
+        setupListeners();
     }
 
     /**
-     * Creates a styled search text field
+     * Creates a styled search text field.
      */
-    private JTextField createSearchField() {
+    private JTextField createTextField() {
         JTextField field = new JTextField();
         field.setFont(new Font("Arial", Font.PLAIN, 14));
         field.setBorder(BorderFactory.createCompoundBorder(
@@ -59,18 +49,19 @@ public class SearchBar extends JPanel {
     }
 
     /**
-     * Creates a filter dropdown with default styling
+     * Creates a filter dropdown with default styling.
      */
-    private JComboBox<String> createFilterDropdown(String defaultOption) {
+    private JComboBox<String> createDropdown(String defaultOption) {
         JComboBox<String> dropdown = new JComboBox<>(new String[]{defaultOption});
         dropdown.setFont(new Font("Arial", Font.PLAIN, 14));
         dropdown.setBackground(Color.WHITE);
         dropdown.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        dropdown.setPreferredSize(new Dimension(150, dropdown.getPreferredSize().height)); // Set preferred width
         return dropdown;
     }
 
     /**
-     * Sets up the component layout using GridBagLayout
+     * Sets up the component layout using GridBagLayout for responsiveness.
      */
     private void setupLayout() {
         setLayout(new GridBagLayout());
@@ -78,36 +69,37 @@ public class SearchBar extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.insets = new Insets(5, 5, 5, 5); // Add spacing between components
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Add search icon
         JLabel searchIcon = createSearchIcon();
-        add(searchIcon, createConstraints(0, 0, 0.0));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0; // Do not expand
+        add(searchIcon, gbc);
 
         // Add search field
-        add(searchField, createConstraints(1, 0, 1.0));
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weightx = 1; // Expand to fill available space
+        add(searchField, gbc);
 
-        // Add filter dropdowns
-        add(categoryFilter, createConstraints(2, 0, 0.0));
-        add(authorFilter, createConstraints(3, 0, 0.0));
+        // Add category filter
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.weightx = 0; // Do not expand
+        add(categoryFilter, gbc);
+
+        // Add author filter
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        gbc.weightx = 0; // Do not expand
+        add(authorFilter, gbc);
     }
 
     /**
-     * Creates constraints for GridBagLayout
-     */
-    private GridBagConstraints createConstraints(int gridX, int gridY, double weightX) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = gridX;
-        gbc.gridy = gridY;
-        gbc.weightx = weightX;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        return gbc;
-    }
-
-    /**
-     * Creates and configures the search icon
+     * Creates and configures the search icon.
      */
     private JLabel createSearchIcon() {
         ImageIcon icon = ImageLoader.loadImageIcon(
@@ -126,9 +118,9 @@ public class SearchBar extends JPanel {
     }
 
     /**
-     * Sets up search triggers (icon click and enter key)
+     * Sets up search triggers (icon click and enter key).
      */
-    private void setupSearchTriggers() {
+    private void setupListeners() {
         // Search on enter key
         searchField.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
@@ -145,9 +137,9 @@ public class SearchBar extends JPanel {
     }
 
     /**
-     * Loads filter data from the book controller
+     * Loads filter data from the book controller.
      */
-    private void loadFilterData() {
+    private void loadFilters() {
         // Clear existing items
         categoryFilter.removeAllItems();
         authorFilter.removeAllItems();
@@ -162,24 +154,26 @@ public class SearchBar extends JPanel {
     }
 
     /**
-     * Performs the search based on current field values
+     * Performs the search based on current field values.
      */
     private void search() {
         String searchText = searchField.getText().trim().toLowerCase();
         String category = categoryFilter.getSelectedItem().toString();
         String author = authorFilter.getSelectedItem().toString();
 
+        // Filter books based on search criteria
         List<Book> results = bookController.getAllBooks().stream()
                 .filter(book -> matchesSearch(book, searchText, category, author))
                 .toList();
 
+        // Pass the results to the callback
         if (onSearchResults != null) {
             onSearchResults.accept(results);
         }
     }
 
     /**
-     * Checks if a book matches the search criteria
+     * Checks if a book matches the search criteria.
      */
     private boolean matchesSearch(Book book, String searchText, String category, String author) {
         boolean matchesText = searchText.isEmpty() ||
@@ -196,7 +190,7 @@ public class SearchBar extends JPanel {
     }
 
     /**
-     * Public methods for external control
+     * Clears the search field and resets filters.
      */
     public void clearSearch() {
         searchField.setText("");
@@ -205,7 +199,10 @@ public class SearchBar extends JPanel {
         search();
     }
 
+    /**
+     * Refreshes the filter dropdowns with updated data.
+     */
     public void refreshFilters() {
-        loadFilterData();
+        loadFilters();
     }
 }

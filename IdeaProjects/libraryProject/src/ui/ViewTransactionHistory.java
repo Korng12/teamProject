@@ -64,16 +64,18 @@ public class ViewTransactionHistory extends JPanel {
         List<Transaction> transactions = transactionController.getTransactionsByUser(user.getEmail());
 
         // Define column names for the JTable
-        String[] columnNames = {"NO.", "Name", "Book's id", "Book's Title", "Issued date", "Due date", "Status"};
+        String[] columnNames = {"NO.", "Name", "Transaction's id.", "Book's id", "Book's Title", "Issued date", "Due date", "Status"};
 
         // Create a DefaultTableModel to hold the data
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
-
+        int rowID = 0;
         // Populate the table model with transaction data
         for (Transaction transaction : transactions) {
+            rowID ++;
             Object[] rowData = {
-                    transaction.getId(), // NO. (Transaction ID as String)
+                    rowID,
                     user.getName(), // Name
+                    transaction.getId(), // NO. (Transaction ID as String)
                     transaction.getBookId(), // Book's id (String)
                     getBookTitle(transaction.getBookId()), // Book's Title
                     transaction.getBorrowDate(), // Issued date

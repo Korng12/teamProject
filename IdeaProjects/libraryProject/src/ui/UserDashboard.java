@@ -136,7 +136,7 @@ public class UserDashboard extends JPanel {
         // Add the "View" button to the right side of the title panel
         JButton viewButton = createStyledButton.create("View All", new Color(90, 160, 255));
         viewButton.addActionListener(e -> {
-            AllBooks allBooks = new AllBooks(genre, books, cardLayout, cardPanel, user, menuController, bookController);
+            AllBooks allBooks = new AllBooks(genre, books, cardLayout, cardPanel, user, menuController, bookController, "UserDashboard");
             cardPanel.add(allBooks, "AllBooks");
             cardLayout.show(cardPanel, "AllBooks");
         });
@@ -166,7 +166,8 @@ public class UserDashboard extends JPanel {
                 BookCard bookCard = new BookCard(
                         book, // Pass the book object
                         () -> openPDF(book.getLink()), // Read action: open PDF
-                        () -> showBookDetails(book)       // View Details action: navigate to book details
+                        () -> showBookDetails(book),       // View Details action: navigate to book details
+                        "UserDashboard" // Pass the frame type
                 );
 
                 bookListPanel.add(bookCard); // Add the book card to the panel
@@ -223,12 +224,8 @@ public class UserDashboard extends JPanel {
 
     // Method to show book details
     private void showBookDetails(Book book) {
-        // Fetch the button text from the BookCard
-        BookCard bookCard = bookCardMap.get(book);
-        String buttonText = bookCard != null ? bookCard.getButtonText() : "Read"; // Default to "Read" if BookCard is not found
-
-        // Pass the button text to BookDetails
-        BookDetails detailsScreen = new BookDetails(book, buttonText, cardLayout, cardPanel, user, menuController,bookController);
+        // Pass the frame type to BookDetails
+        BookDetails detailsScreen = new BookDetails(book, cardLayout, cardPanel, user, menuController, bookController, "UserDashboard");
         cardPanel.add(detailsScreen, "BookDetails");
         cardLayout.show(cardPanel, "BookDetails");
     }

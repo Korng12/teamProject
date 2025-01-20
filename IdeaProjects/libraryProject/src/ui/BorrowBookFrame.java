@@ -17,7 +17,6 @@ import ui.components.SearchBar;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +30,7 @@ public class BorrowBookFrame extends JPanel implements TransactionListener {
     private final JPanel cardPanel;
     private final MenuController menuController;
     private final Map<Book, BookCard> bookCardMap = new HashMap<>(); // Track BookCard instances
+    private JPanel bookContentPanel; // Panel to hold the search bar and book list
 
     public BorrowBookFrame(User user, CardLayout cardLayout, JPanel cardPanel, BookController bookController, TransactionController transactionController) {
         this.user = user;
@@ -58,7 +58,7 @@ public class BorrowBookFrame extends JPanel implements TransactionListener {
         mainContent.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Panel to hold the search bar and book list
-        JPanel bookContentPanel = new JPanel();
+        bookContentPanel = new JPanel();
         bookContentPanel.setLayout(new BoxLayout(bookContentPanel, BoxLayout.Y_AXIS));
         bookContentPanel.setBackground(new Color(240, 240, 240));
 
@@ -130,7 +130,7 @@ public class BorrowBookFrame extends JPanel implements TransactionListener {
         JButton viewAllButton = createStyledButton.create("View All", new Color(90, 160, 255));
         viewAllButton.addActionListener(_ -> {
             // Navigate to the AllBooks frame with the selected genre and books
-            AllBooks allBooksFrame = new AllBooks(genre, books, cardLayout, cardPanel, user, menuController, bookController);
+            AllBooks allBooksFrame = new AllBooks(genre, books, cardLayout, cardPanel, user, menuController, bookController, "BorrowBookFrame");
             cardPanel.add(allBooksFrame, "AllBooks");
             cardLayout.show(cardPanel, "AllBooks");
         });
@@ -152,7 +152,7 @@ public class BorrowBookFrame extends JPanel implements TransactionListener {
             int end = Math.min(start + booksPerPage, books.size());
             for (int i = start; i < end; i++) {
                 Book book = books.get(i);
-                BookCard bookCard = new BookCard(book, () -> borrowBook(book), () -> showBookDetails(book));
+                BookCard bookCard = new BookCard(book, () -> borrowBook(book), () -> showBookDetails(book), "BorrowBookFrame");
                 bookListPanel.add(bookCard);
                 bookCardMap.put(book, bookCard); // Track the BookCard
             }
@@ -201,16 +201,12 @@ public class BorrowBookFrame extends JPanel implements TransactionListener {
     }
 
     private void borrowBook(Book book) {
-        BorrowBookUtil.borrowBook(book, user, transactionController, this);
+        BorrowBookUtil.borrowBook(book, user, transactionController, this, this);
     }
 
     private void showBookDetails(Book book) {
-        // Fetch the button text from the BookCard
-        BookCard bookCard = bookCardMap.get(book);
-        String buttonText = bookCard != null ? bookCard.getButtonText() : "Borrow"; // Default to "Read" if BookCard is not found
-
-        // Pass the button text to BookDetails
-        BookDetails detailsScreen = new BookDetails(book, buttonText, cardLayout, cardPanel, user, new MenuController(user, cardLayout, cardPanel), bookController);
+        // Pass the frame type to BookDetails
+        BookDetails detailsScreen = new BookDetails(book, cardLayout, cardPanel, user, menuController, bookController, "BorrowBookFrame");
         cardPanel.add(detailsScreen, "BookDetails");
         cardLayout.show(cardPanel, "BookDetails");
     }
@@ -225,11 +221,21 @@ public class BorrowBookFrame extends JPanel implements TransactionListener {
         // Show success message
         JOptionPane.showMessageDialog(this, "Book borrowed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
 
-        // Update the specific BookCard
+        // Get the borrowed book
         Book borrowedBook = bookController.getBooksByID(transaction.getBookId());
+
+        // Remove the BookCard from the UI
         BookCard bookCard = bookCardMap.get(borrowedBook);
         if (bookCard != null) {
-            bookCard.updateAvailability(); // Update the UI to reflect the book's unavailability
+            Container parent = bookCard.getParent();
+            if (parent != null) {
+                parent.remove(bookCard);
+                parent.revalidate();
+                parent.repaint();
+            }
+
+            // Remove the book from the bookCardMap
+            bookCardMap.remove(borrowedBook);
         }
     }
 
